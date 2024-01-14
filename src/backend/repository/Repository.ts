@@ -1,5 +1,6 @@
-import { RecordService } from "pocketbase";
+import { RecordOptions, RecordService } from "pocketbase";
 import pb from "../db";
+import { Settings } from "../domain/Settings";
 
 export default class Repository {
   private readonly _collectionName: string;
@@ -16,11 +17,34 @@ export default class Repository {
 
   async getFirstOne<T>(filter: string) {
     try {
-      return await this.db.getFirstListItem<T>(filter);
+      return await this.db.getFirstListItem<Settings>(filter);
     } catch (ex: any) {
-      console.error("error", ex);
+      // console.error("error", ex, filter);
     }
     return null;
+  }
+
+  async create<T>(
+    bodyParams?:
+      | {
+          [key: string]: any;
+        }
+      | FormData,
+    options?: RecordOptions
+  ) {
+    return await this.db.create<T>(bodyParams, options);
+  }
+
+  async update<T>(
+    id: string,
+    bodyParams?:
+      | {
+          [key: string]: any;
+        }
+      | FormData,
+    options?: RecordOptions
+  ) {
+    return await this.db.update<T>(id, bodyParams, options);
   }
   // fetch a paginated records list
   resultList = async () =>
