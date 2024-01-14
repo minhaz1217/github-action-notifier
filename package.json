@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@octokit/rest": "^20.0.2",
     "next": "14.0.4",
     "pocketbase": "^0.20.2",
     "primeicons": "^6.0.1",

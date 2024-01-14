@@ -29,7 +29,7 @@ export default class SettingsRepository {
       });
     }
     // insert operation
-    return await this.repo.create({ key: key, value: value });
+    return await this.repo.create<Settings>({ key: key, value: value });
   }
 
   async removeKey(key: string) {
