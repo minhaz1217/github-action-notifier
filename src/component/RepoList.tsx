@@ -3,9 +3,13 @@ import { useEffect, useState } from "react";
 import GithubTokenService from "../backend/services/GithubTokenService";
 import { Button } from "primereact/button";
 import { Octokit } from "@octokit/rest";
+import { InputText } from "primereact/inputtext";
+import RepoBasic from "./RepoBasic";
 
 const RepoList = () => {
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [repoSearchText, setRepoSearchText] = useState<string>("");
+  const [searchResult, setSearchResult] = useState<any[] | null>(null);
   const tokenService: GithubTokenService = new GithubTokenService();
   const commonHeader = {
     headers: {
@@ -23,25 +27,41 @@ const RepoList = () => {
     }
     console.debug("Token", token);
   };
-  const onGetListClicked = async () => {
-    if (apiKey === null) {
+  const onSearchClicked = async () => {
+    if (apiKey === null || repoSearchText.trim() === "") {
       return;
     }
+
     const octokit = new Octokit({
       auth: apiKey,
     });
-    const orgs = await octokit.request("GET /user/repos", commonHeader);
-    console.debug("ORGS", orgs);
+    const searchResult = await octokit.search.repos({
+      q: `${repoSearchText}`,
+    });
+    setSearchResult(searchResult.data.items);
+    console.debug("Result", searchResult.data.items);
+    // const orgs = await octokit.request("GET /user/repos", commonHeader);
+    // console.debug("ORGS", orgs);
     // const commits = await octokit.repos.listCommits();
   };
   return (
-    <Button
-      className="ml-2"
-      label="Get List"
-      type="button"
-      icon="pi pi-check"
-      onClick={onGetListClicked}
-    />
+    <div>
+      <InputText
+        placeholder="Search Repo"
+        value={repoSearchText}
+        onChange={(e) => setRepoSearchText(e.target.value)}
+      />
+      <Button
+        className="ml-2"
+        label="Search"
+        type="button"
+        icon="pi pi-check"
+        onClick={onSearchClicked}
+      />
+      <div>
+        {searchResult && searchResult.map((item) => <RepoBasic repo={item} key={item.id} />)}
+      </div>
+    </div>
   );
 };
 export default RepoList;
