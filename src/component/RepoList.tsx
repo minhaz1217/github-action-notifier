@@ -44,6 +44,9 @@ const RepoList = () => {
     // console.debug("ORGS", orgs);
     // const commits = await octokit.repos.listCommits();
   };
+  const onSubscribeClicked = (id: string) => {
+    console.debug("Subscribe Clicked", id);
+  };
   return (
     <div>
       <InputText
@@ -59,7 +62,14 @@ const RepoList = () => {
         onClick={onSearchClicked}
       />
       <div>
-        {searchResult && searchResult.map((item) => <RepoBasic repo={item} key={item.id} />)}
+        {searchResult &&
+          searchResult.map((item) => (
+            <RepoBasic
+              repo={item}
+              key={item.id}
+              onSubscribeClicked={onSubscribeClicked}
+            />
+          ))}
       </div>
     </div>
   );
