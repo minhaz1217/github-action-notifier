@@ -4,21 +4,24 @@ import { Button } from "primereact/button";
 import { useEffect, useState } from "react";
 import SettingsRepository from "../backend/repository/SettingsRepository";
 import { Settings } from "../backend/domain/Settings";
+import GithubTokenService from "../backend/services/GithubTokenService";
 
 const GithubApiKeyInput = () => {
   const [apiKey, setApiKey] = useState<string>("");
   const [settings, setSettings] = useState<Settings | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const settingRepo = new SettingsRepository();
+  const tokenService = new GithubTokenService();
   useEffect(() => {
     checkIsApiKeySet();
   }, []);
 
   const checkIsApiKeySet = async () => {
     setIsLoading(true);
-    const setting = await settingRepo.getKey("API_KEY");
+    const setting = await tokenService.get();
     if (setting !== null) {
-      setSettings(setting);
+      if (setting !== settings) {
+        setSettings(setting);
+      }
     } else {
       setSettings(null);
     }
@@ -28,13 +31,13 @@ const GithubApiKeyInput = () => {
   // checkIsApiKeySet();
   const onSaveClicked = async (e: any) => {
     setIsLoading(true);
-    const afterSaving = await settingRepo.setKey("API_KEY", apiKey);
+    const afterSaving = await tokenService.set(apiKey);
     await checkIsApiKeySet();
     setIsLoading(false);
   };
   const onClearClicked = async () => {
     setIsLoading(true);
-    const settingDeleted = await settingRepo.removeKey("API_KEY");
+    const settingDeleted = await tokenService.remove();
     if (settingDeleted === true) {
       await checkIsApiKeySet();
     }
@@ -45,7 +48,7 @@ const GithubApiKeyInput = () => {
       {isLoading === false ? (
         settings !== null ? (
           <div>
-            <p>Token is set.</p>
+            <span>Token is set.</span>
 
             <Button
               className="ml-2"
