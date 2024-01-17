@@ -5,6 +5,10 @@ import { Button } from "primereact/button";
 import { Octokit } from "@octokit/rest";
 import { InputText } from "primereact/inputtext";
 import RepoBasic from "./RepoBasic";
+import Repository from "../backend/repository/Repository";
+import Tables from "../backend/dbs";
+import { RepoModel } from "../backend/models/RepoModel";
+import { Subscription } from "../backend/domain/Subscription";
 
 const RepoList = () => {
   const [apiKey, setApiKey] = useState<string | null>(null);
@@ -44,8 +48,17 @@ const RepoList = () => {
     // console.debug("ORGS", orgs);
     // const commits = await octokit.repos.listCommits();
   };
-  const onSubscribeClicked = (id: string) => {
-    console.debug("Subscribe Clicked", id);
+  const onSubscribeClicked = async (repoDetails: RepoModel) => {
+    console.debug("Subscribe Clicked", repoDetails);
+    const subscriptionRepository = new Repository(Tables.SUBSCRIPTION);
+    const payload: Subscription = {
+      githubId: repoDetails.id,
+      name: repoDetails.name,
+      url: repoDetails.html_url,
+      description: repoDetails.description,
+    } as Subscription;
+    const made = await subscriptionRepository.create<Subscription>(payload);
+    console.debug("Made", made);
   };
   return (
     <div>
