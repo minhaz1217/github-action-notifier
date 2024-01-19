@@ -3,14 +3,19 @@ import { Card } from "primereact/card";
 import { RepoModel } from "../backend/models/RepoModel";
 const RepoBasic = ({
   repo,
-  onSubscribeClicked,
+  isSubscribed,
+  buttonClicked,
 }: {
   repo: RepoModel;
-  onSubscribeClicked: Function;
+  isSubscribed: boolean;
+  buttonClicked: Function;
 }) => {
   return (
     <Card title={repo.name} subTitle={repo.description} className="mt-2">
-      <Button label="Subscribe" onClick={() => onSubscribeClicked(repo)} />
+      <Button
+        label={isSubscribed === true ? "Unsubscribe" : "Subscribe"}
+        onClick={() => buttonClicked(repo)}
+      />
     </Card>
   );
 };

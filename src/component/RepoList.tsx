@@ -78,9 +78,10 @@ const RepoList = () => {
         {searchResult &&
           searchResult.map((item) => (
             <RepoBasic
+              isSubscribed={false}
               repo={item}
               key={item.id}
-              onSubscribeClicked={onSubscribeClicked}
+              buttonClicked={onSubscribeClicked}
             />
           ))}
       </div>
