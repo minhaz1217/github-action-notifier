@@ -1,4 +1,4 @@
-import Tables from "../dbs";
+import Tables from "../Tables";
 import { Subscription } from "../domain/Subscription";
 import Repository from "../repository/Repository";
 

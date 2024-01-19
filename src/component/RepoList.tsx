@@ -6,7 +6,7 @@ import { Octokit } from "@octokit/rest";
 import { InputText } from "primereact/inputtext";
 import RepoBasic from "./RepoBasic";
 import Repository from "../backend/repository/Repository";
-import Tables from "../backend/dbs";
+import Tables from "../backend/Tables";
 import { RepoModel } from "../backend/models/RepoModel";
 import { Subscription } from "../backend/domain/Subscription";
 

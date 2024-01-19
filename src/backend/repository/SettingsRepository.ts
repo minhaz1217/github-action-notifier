@@ -1,3 +1,4 @@
+import Tables from "../Tables";
 import pb from "../db";
 import { Settings } from "../domain/Settings";
 import Repository from "./Repository";
@@ -5,7 +6,7 @@ import Repository from "./Repository";
 export default class SettingsRepository {
   private readonly repo: Repository;
   constructor() {
-    this.repo = new Repository("settings");
+    this.repo = new Repository(Tables.SETTINGS);
   }
   async getKey(key: string) {
     const setting = await this.repo.getFirstOne<Settings>(
