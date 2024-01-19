@@ -52,10 +52,12 @@ const GithubApiKeyInput = () => {
 
             <Button
               className="ml-2"
+              severity="help"
               label="Clear"
               type="button"
-              icon="pi pi-check"
+              icon="pi pi-times"
               onClick={onClearClicked}
+              rounded
             />
           </div>
         ) : (

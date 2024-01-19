@@ -13,8 +13,11 @@ const RepoBasic = ({
   return (
     <Card title={repo.name} subTitle={repo.description} className="mt-2">
       <Button
+        severity="danger"
+        icon={isSubscribed === true ? "pi pi-power-off" : "pi pi-lock"}
         label={isSubscribed === true ? "Unsubscribe" : "Subscribe"}
         onClick={() => buttonClicked(repo)}
+        rounded
       />
     </Card>
   );

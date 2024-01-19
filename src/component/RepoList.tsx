@@ -71,8 +71,9 @@ const RepoList = () => {
         className="ml-2"
         label="Search"
         type="button"
-        icon="pi pi-check"
+        icon="pi pi-search"
         onClick={onSearchClicked}
+        rounded
       />
       <div>
         {searchResult &&
