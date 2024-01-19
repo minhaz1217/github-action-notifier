@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import SubscriptionService from "../backend/services/SubscriptionService";
 import { Subscription } from "../backend/domain/Subscription";
 import RepoBasic from "./RepoBasic";
-import { RepoModel } from "../backend/models/RepoModel";
 
 const SubscriptionList = () => {
   const [repoList, setRepoList] = useState<Subscription[]>([]);
@@ -17,20 +16,28 @@ const SubscriptionList = () => {
     const list = await subscriptionService.getList();
     setRepoList(list?.items ?? []);
   };
-  const onSubscribeClicked = () => {
-    console.debug("Unsubscribe clicked");
+  const onSubscribeClicked = async (repo: Subscription) => {
+    const deleteSuccessful = await subscriptionService.delete(repo.id);
+    if (deleteSuccessful === true) {
+      setRepoList(repoList.filter((x) => x.id !== repo.id));
+    }
   };
   return (
-    repoList &&
-    repoList.length > 0 &&
-    repoList.map((x) => (
-      <RepoBasic
-        buttonClicked={onSubscribeClicked}
-        isSubscribed={true}
-        key={x.id}
-        repo={x as any}
-      />
-    ))
+    <>
+      <h2>Subscription List</h2>
+      {repoList && repoList.length > 0 ? (
+        repoList.map((x) => (
+          <RepoBasic
+            buttonClicked={onSubscribeClicked}
+            isSubscribed={true}
+            key={x.id}
+            repo={x as any}
+          />
+        ))
+      ) : (
+        <p className="text-red-400">No Subscription</p>
+      )}
+    </>
   );
 };
 export default SubscriptionList;

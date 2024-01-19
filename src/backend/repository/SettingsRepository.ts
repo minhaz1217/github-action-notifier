@@ -35,7 +35,7 @@ export default class SettingsRepository {
   async removeKey(key: string) {
     const setting = await this.getKey(key);
     if (setting !== null) {
-      return await this.repo.db.delete(setting.id);
+      return await this.repo.delete(setting.id);
     }
     return false;
   }

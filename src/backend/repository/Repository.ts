@@ -63,4 +63,8 @@ export default class Repository {
     await this.db.getFirstListItem('someField="test"', {
       expand: "relField1,relField2.subRelField",
     });
+
+  async delete(id: string) {
+    return await this.db.delete(id);
+  }
 }

@@ -10,4 +10,8 @@ export default class SubscriptionService {
   getList = async () => {
     return await this.subscriptionRepo.getList<Subscription>(0, 10, "");
   };
+
+  async delete(id: string) {
+    return await this.subscriptionRepo.delete(id);
+  }
 }
