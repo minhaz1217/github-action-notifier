@@ -10,8 +10,13 @@ import Tables from "../backend/Tables";
 import { RepoModel } from "../backend/models/RepoModel";
 import { Subscription } from "../backend/domain/Subscription";
 import pb from "../backend/db";
+import { INotifier } from "../backend/patterns/DataObserver";
 
-const RepoList = () => {
+const RepoList = ({
+  notifySubscriptionChanged,
+}: {
+  notifySubscriptionChanged: INotifier;
+}) => {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [repoSearchText, setRepoSearchText] = useState<string>("");
   const [searchResult, setSearchResult] = useState<any[] | null>(null);
@@ -63,6 +68,7 @@ const RepoList = () => {
       );
     if (alreadyExists === null) {
       await subscriptionRepository.create<Subscription>(payload);
+      notifySubscriptionChanged.notifyAll();
     }
   };
   return (

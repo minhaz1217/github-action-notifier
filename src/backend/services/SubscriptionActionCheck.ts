@@ -1,5 +1,5 @@
 "use client";
-import { Octokit } from "@octokit/rest";
+import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { Subscription } from "../domain/Subscription";
 import GithubTokenService from "./GithubTokenService";
 import SubscriptionService from "./SubscriptionService";
@@ -21,8 +21,8 @@ export class SubscriptionActionCheck {
   static init() {
     if (subscriptionActionCheck === null) {
       subscriptionActionCheck = new SubscriptionActionCheck();
+      subscriptionActionCheck?.registerInterval();
     }
-    subscriptionActionCheck?.registerInterval();
     return subscriptionActionCheck;
   }
 
@@ -46,6 +46,7 @@ export class SubscriptionActionCheck {
   }
 
   async checkSubscriptionList() {
+    this.checkAction(new Subscription());
     // const list = await this.subscriptionService.getList();
     // this.checkAction(list?.items[0]);
   }
@@ -62,6 +63,7 @@ export class SubscriptionActionCheck {
         headers: OctoKitService.header,
       } as any)
     ).data as any as WorkflowRunList;
+    console.debug("Workflow List", workFlowRun.total_count);
     workFlowRun.workflow_runs.forEach((run) => {
       if (run === null) {
         return;
@@ -69,11 +71,7 @@ export class SubscriptionActionCheck {
       if (run.status === "in_progress") {
         console.debug("In Progress", run);
         this.inProgressList.add(run.id);
-      } else if (
-        run.status === "completed" ||
-        run.status === "cancelled" ||
-        run.status === "failure"
-      ) {
+      } else {
         // we remove the run from our set
         const removed = this.inProgressList.delete(run.id);
         if (removed === true) {

@@ -4,13 +4,27 @@ import SubscriptionService from "../backend/services/SubscriptionService";
 import { Subscription } from "../backend/domain/Subscription";
 import RepoBasic from "./RepoBasic";
 import { SubscriptionActionCheck } from "../backend/services/SubscriptionActionCheck";
+import {
+  IObservable,
+  IObserver,
+  NotifierBuilder,
+} from "../backend/patterns/DataObserver";
 
-const SubscriptionList = () => {
+const SubscriptionList = ({
+  updateOnSubscriptionChanged,
+}: {
+  updateOnSubscriptionChanged: IObservable;
+}) => {
   const [repoList, setRepoList] = useState<Subscription[]>([]);
   const subscriptionService = new SubscriptionService();
 
   const interval = SubscriptionActionCheck.init();
   useEffect(() => {
+    updateOnSubscriptionChanged.subscribe(
+      new NotifierBuilder(async () => {
+        await getSubscriptionList();
+      })
+    );
     getSubscriptionList();
   }, []);
 
