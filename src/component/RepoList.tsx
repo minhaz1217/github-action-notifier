@@ -11,6 +11,7 @@ import { RepoModel } from "../backend/models/RepoModel";
 import { Subscription } from "../backend/domain/Subscription";
 import pb from "../backend/db";
 import { INotifier } from "../backend/patterns/DataObserver";
+import Discord from "../backend/notification-providers/Discord";
 
 const RepoList = ({
   notifySubscriptionChanged,
@@ -33,6 +34,9 @@ const RepoList = ({
     console.debug("Token", token);
   };
   const onSearchClicked = async () => {
+    const discord = new Discord();
+    discord.send("This is another message");
+    return;
     if (apiKey === null || repoSearchText.trim() === "") {
       return;
     }
