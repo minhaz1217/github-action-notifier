@@ -5,4 +5,5 @@ export class Subscription extends Base {
   url: string = "";
   githubId: string = "";
   description: string = "";
+  owner: string = "";
 }

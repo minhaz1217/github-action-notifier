@@ -4,4 +4,8 @@ export interface RepoModel {
   full_name: string;
   html_url: string;
   description: string;
+  owner: {
+    id: string;
+    login: string;
+  };
 }

@@ -9,17 +9,13 @@ import Repository from "../backend/repository/Repository";
 import Tables from "../backend/Tables";
 import { RepoModel } from "../backend/models/RepoModel";
 import { Subscription } from "../backend/domain/Subscription";
+import pb from "../backend/db";
 
 const RepoList = () => {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [repoSearchText, setRepoSearchText] = useState<string>("");
   const [searchResult, setSearchResult] = useState<any[] | null>(null);
   const tokenService: GithubTokenService = new GithubTokenService();
-  const commonHeader = {
-    headers: {
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-  };
   useEffect(() => {
     checkApiKey();
   }, [apiKey]);
@@ -56,9 +52,18 @@ const RepoList = () => {
       name: repoDetails.name,
       url: repoDetails.html_url,
       description: repoDetails.description,
+      owner: repoDetails?.owner?.login ?? "",
     } as Subscription;
-    const made = await subscriptionRepository.create<Subscription>(payload);
-    console.debug("Made", made);
+
+    const alreadyExists =
+      await subscriptionRepository.getFirstOne<Subscription>(
+        pb.filter("name = {:key}", {
+          key: payload.name,
+        })
+      );
+    if (alreadyExists === null) {
+      await subscriptionRepository.create<Subscription>(payload);
+    }
   };
   return (
     <div>
