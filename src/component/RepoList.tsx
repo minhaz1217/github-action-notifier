@@ -34,9 +34,6 @@ const RepoList = ({
     console.debug("Token", token);
   };
   const onSearchClicked = async () => {
-    const discord = new Discord();
-    discord.send("This is another message");
-    return;
     if (apiKey === null || repoSearchText.trim() === "") {
       return;
     }

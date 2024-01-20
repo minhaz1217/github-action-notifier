@@ -1,9 +1,9 @@
-"use client";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { Subscription } from "../domain/Subscription";
 import GithubTokenService from "./GithubTokenService";
 import SubscriptionService from "./SubscriptionService";
 import OctoKitService from "./OctoKitService";
+import Discord from "../notification-providers/Discord";
 
 let subscriptionActionCheck: SubscriptionActionCheck | null = null;
 
@@ -13,10 +13,12 @@ export class SubscriptionActionCheck {
   private intervalId: any | null = null;
   private octokit: Octokit | null = null;
   private inProgressList: Set<number> = new Set();
+  private discord: Discord;
 
   private constructor() {
     this.subscriptionService = new SubscriptionService();
     this.githubTokenService = new GithubTokenService();
+    this.discord = new Discord();
   }
   static init() {
     if (subscriptionActionCheck === null) {
@@ -40,15 +42,17 @@ export class SubscriptionActionCheck {
 
     this.checkSubscriptionList();
 
-    // this.intervalId = setInterval(() => {
-    //   this.checkSubscriptionList();
-    // }, 1000);
+    this.intervalId = setInterval(() => {
+      this.checkSubscriptionList();
+    }, 10000);
   }
 
   async checkSubscriptionList() {
-    this.checkAction(new Subscription());
-    // const list = await this.subscriptionService.getList();
-    // this.checkAction(list?.items[0]);
+    console.debug("Checking Subscription");
+    const list = await this.subscriptionService.getList();
+    if (list.items.length > 0) {
+      list.items.forEach((item) => this.checkAction(item));
+    }
   }
 
   async checkAction(subscription: Subscription) {
@@ -58,18 +62,21 @@ export class SubscriptionActionCheck {
 
     const workFlowRun = (
       await this.octokit.actions.getWorkflowRun({
-        owner: `SELISEdigitalplatforms`,
-        repo: "l3-net-ipex-business",
+        owner: subscription.owner,
+        repo: subscription.name,
         headers: OctoKitService.header,
       } as any)
     ).data as any as WorkflowRunList;
-    console.debug("Workflow List", workFlowRun.total_count);
+
     workFlowRun.workflow_runs.forEach((run) => {
       if (run === null) {
         return;
       }
       if (run.status === "in_progress") {
-        console.debug("In Progress", run);
+        if (this.inProgressList.has(run.id) === false) {
+          // notifying when first time the run is found.
+          this.sendNotification(run);
+        }
         this.inProgressList.add(run.id);
       } else {
         // we remove the run from our set
@@ -83,15 +90,16 @@ export class SubscriptionActionCheck {
   }
 
   sendNotification(run: WorkflowRun) {
-    console.debug("Run Completed", run);
+    this.discord.send(run);
   }
 }
 
+const interval = SubscriptionActionCheck.init();
 interface WorkflowRunList {
   total_count: number;
   workflow_runs: WorkflowRun[];
 }
-interface WorkflowRun {
+export interface WorkflowRun {
   id: number;
   name: string;
   head_branch: string;

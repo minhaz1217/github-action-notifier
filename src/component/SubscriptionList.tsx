@@ -18,7 +18,6 @@ const SubscriptionList = ({
   const [repoList, setRepoList] = useState<Subscription[]>([]);
   const subscriptionService = new SubscriptionService();
 
-  const interval = SubscriptionActionCheck.init();
   useEffect(() => {
     updateOnSubscriptionChanged.subscribe(
       new NotifierBuilder(async () => {
