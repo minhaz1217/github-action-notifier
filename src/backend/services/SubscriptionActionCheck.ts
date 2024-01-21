@@ -1,3 +1,4 @@
+"use server";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { Subscription } from "../domain/Subscription";
 import GithubTokenService from "./GithubTokenService";
@@ -20,10 +21,11 @@ export class SubscriptionActionCheck {
     this.githubTokenService = new GithubTokenService();
     this.discord = new Discord();
   }
-  static init() {
+  static async init() {
+    console.debug("Init Called");
     if (subscriptionActionCheck === null) {
       subscriptionActionCheck = new SubscriptionActionCheck();
-      subscriptionActionCheck?.registerInterval();
+      await subscriptionActionCheck?.registerInterval();
     }
     return subscriptionActionCheck;
   }
@@ -48,8 +50,8 @@ export class SubscriptionActionCheck {
   }
 
   async checkSubscriptionList() {
-    console.debug("Checking Subscription");
     const list = await this.subscriptionService.getList();
+    console.debug(`Checking Subscription for ${list.items.length}`);
     if (list.items.length > 0) {
       list.items.forEach((item) => this.checkAction(item));
     }
@@ -94,7 +96,6 @@ export class SubscriptionActionCheck {
   }
 }
 
-const interval = SubscriptionActionCheck.init();
 interface WorkflowRunList {
   total_count: number;
   workflow_runs: WorkflowRun[];
@@ -117,4 +118,10 @@ export interface WorkflowRun {
   head_commit: {
     message: string;
   };
+  repository: {
+    name: string;
+  };
+}
+export default async function registerSubscriptionAction() {
+  const interval = await SubscriptionActionCheck.init();
 }
