@@ -2,11 +2,12 @@
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { FormEvent, useState } from "react";
+import Repository from "../../backend/repository/Repository";
 
 export default function Login() {
   const [formData, setFormData] = useState<SignUpForm>(new SignUpForm());
 
-  const clickedSignUp = (e: FormEvent) => {
+  const clickedSignUp = async (e: FormEvent) => {
     e.preventDefault();
     let newFormData = formData;
     newFormData.confirmPasswordError = "";
@@ -31,6 +32,12 @@ export default function Login() {
       return;
     }
     setFormData({ ...newFormData });
+    const repo = new Repository("users");
+    const createdUser = await repo.create({
+      email: formData.email,
+      password: formData.password,
+      passwordConfirm: formData.confirmPassword,
+    });
   };
   return (
     <div className="flex flex-row items-center justify-center w-full">
@@ -52,7 +59,7 @@ export default function Login() {
             </label>
             <InputText
               id="email"
-              type="text"
+              type="email"
               placeholder="Email address"
               className="w-full mb-3"
               value={formData?.email}
