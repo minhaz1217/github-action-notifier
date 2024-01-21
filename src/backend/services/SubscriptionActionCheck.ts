@@ -1,4 +1,3 @@
-"use server";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import { Subscription } from "../domain/Subscription";
 import GithubTokenService from "./GithubTokenService";
@@ -8,7 +7,7 @@ import Discord from "../notification-providers/Discord";
 
 let subscriptionActionCheck: SubscriptionActionCheck | null = null;
 
-export class SubscriptionActionCheck {
+class SubscriptionActionCheck {
   subscriptionService: SubscriptionService;
   githubTokenService: GithubTokenService;
   private intervalId: any | null = null;
@@ -22,12 +21,14 @@ export class SubscriptionActionCheck {
     this.discord = new Discord();
   }
   static async init() {
-    console.debug("Init Called");
-    if (subscriptionActionCheck === null) {
-      subscriptionActionCheck = new SubscriptionActionCheck();
-      await subscriptionActionCheck?.registerInterval();
+    if (typeof window === "undefined") {
+      console.debug("Init Called");
+      if (subscriptionActionCheck === null) {
+        subscriptionActionCheck = new SubscriptionActionCheck();
+        await subscriptionActionCheck?.registerInterval();
+      }
+      return subscriptionActionCheck;
     }
-    return subscriptionActionCheck;
   }
 
   async registerInterval() {
@@ -51,7 +52,11 @@ export class SubscriptionActionCheck {
 
   async checkSubscriptionList() {
     const list = await this.subscriptionService.getList();
-    console.debug(`Checking Subscription for ${list.items.length}`);
+    console.debug(
+      `${new Date().toISOString()} Checking Subscription for ${
+        list.items.length
+      }`
+    );
     if (list.items.length > 0) {
       list.items.forEach((item) => this.checkAction(item));
     }

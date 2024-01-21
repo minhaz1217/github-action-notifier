@@ -3,9 +3,11 @@ import DataObserver from "../backend/patterns/DataObserver";
 import GithubApiKeyInput from "../component/GithubApiKeyInput";
 import RepoList from "../component/RepoList";
 import SubscriptionList from "../component/SubscriptionList";
+import { register } from "../instrumentation";
 
 export default function Home() {
   const newSubscriptionAdded$ = new DataObserver();
+  register();
   return (
     <>
       <div className="p-4">
