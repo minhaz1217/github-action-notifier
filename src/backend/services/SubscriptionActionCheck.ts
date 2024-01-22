@@ -23,12 +23,14 @@ class SubscriptionActionCheck {
   static async init() {
     if (typeof window === "undefined") {
       console.debug("Init Called");
+    } else {
       if (subscriptionActionCheck === null) {
         subscriptionActionCheck = new SubscriptionActionCheck();
         await subscriptionActionCheck?.registerInterval();
       }
-      return subscriptionActionCheck;
+      console.debug("Is in client");
     }
+    return subscriptionActionCheck;
   }
 
   async registerInterval() {
@@ -74,7 +76,7 @@ class SubscriptionActionCheck {
         headers: OctoKitService.header,
       } as any)
     ).data as any as WorkflowRunList;
-
+    console.debug("Workflow run", workFlowRun);
     workFlowRun.workflow_runs.forEach((run) => {
       if (run === null) {
         return;
