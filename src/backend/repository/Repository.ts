@@ -67,4 +67,8 @@ export default class Repository {
   async delete(id: string) {
     return await this.db.delete(id);
   }
+
+  async authWithPassword(email: string, password: string) {
+    return await this.db.authWithPassword(email, password);
+  }
 }
