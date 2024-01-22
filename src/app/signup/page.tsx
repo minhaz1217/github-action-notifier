@@ -2,9 +2,9 @@
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { FormEvent, useState } from "react";
-import Repository from "../../backend/repository/Repository";
 import { useRouter } from "next/navigation";
 import { ClientResponseError } from "pocketbase";
+import UserService from "../../backend/services/UserService";
 
 export default function Login() {
   const [formData, setFormData] = useState<SignUpForm>(new SignUpForm());
@@ -36,12 +36,12 @@ export default function Login() {
     }
     setFormData({ ...newFormData });
     try {
-      const repo = new Repository("users");
-      const createdUser = (await repo.create({
-        email: formData.email,
-        password: formData.password,
-        passwordConfirm: formData.confirmPassword,
-      })) as any;
+      const userService = new UserService();
+      const createdUser = (await userService.create(
+        formData.email,
+        formData.password,
+        formData.confirmPassword
+      )) as any;
       console.debug("Created User", createdUser);
       if (createdUser?.id) {
         // TODO: show success toast message
