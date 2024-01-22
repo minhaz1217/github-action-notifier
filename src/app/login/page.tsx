@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { FormEvent, useState } from "react";
-import Repository from "../../backend/repository/Repository";
 import UserService from "../../backend/services/UserService";
 import { ClientResponseError } from "pocketbase";
 

@@ -3,6 +3,7 @@ import DataObserver from "../../backend/patterns/DataObserver";
 import GithubApiKeyInput from "../../component/GithubApiKeyInput";
 import RepoList from "../../component/RepoList";
 import SubscriptionList from "../../component/SubscriptionList";
+import ToolBar from "../../component/ToolBar";
 import { register } from "../../instrumentation";
 
 const Dashboard = () => {
@@ -10,6 +11,7 @@ const Dashboard = () => {
   register();
   return (
     <>
+      <ToolBar />
       <div className="p-4">
         <GithubApiKeyInput />
         <div className="mt-2"></div>

@@ -1,4 +1,4 @@
-import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import { Subscription } from "../domain/Subscription";
 import GithubTokenService from "./GithubTokenService";
 import SubscriptionService from "./SubscriptionService";
