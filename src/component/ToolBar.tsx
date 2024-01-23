@@ -1,7 +1,7 @@
 import { Button } from "primereact/button";
 import { Toolbar } from "primereact/toolbar";
 import React from "react";
-import SettingModal from "./Settings";
+import SettingModal from "./SettingModal";
 export default function ToolBar() {
   const items = [
     {
