@@ -1,6 +1,7 @@
 import { Button } from "primereact/button";
 import { Toolbar } from "primereact/toolbar";
 import React from "react";
+import SettingModal from "./Settings";
 export default function ToolBar() {
   const items = [
     {
@@ -21,14 +22,7 @@ export default function ToolBar() {
 
   const endContent = (
     <>
-      <Button
-        icon="pi pi-cog"
-        rounded
-        text
-        aria-label="Settings"
-        className="mr-2 text-2xl"
-        size="large"
-      />
+      <SettingModal />
       <Button
         icon="pi pi-sign-out"
         rounded
