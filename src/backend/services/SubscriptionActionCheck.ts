@@ -4,6 +4,7 @@ import GithubTokenService from "./GithubTokenService";
 import SubscriptionService from "./SubscriptionService";
 import OctoKitService from "./OctoKitService";
 import Discord from "../notification-providers/Discord";
+import AllSettingsService from "./AllSettingsService";
 
 let subscriptionActionCheck: SubscriptionActionCheck | null = null;
 
@@ -15,18 +16,24 @@ class SubscriptionActionCheck {
   private inProgressList: Set<number> = new Set();
   private discord: Discord;
 
-  private constructor() {
+  private constructor(discordUrl: string) {
     this.subscriptionService = new SubscriptionService();
     this.githubTokenService = new GithubTokenService();
-    this.discord = new Discord();
+    this.discord = new Discord(discordUrl);
+    // https://discord.com/api/webhooks/1198312654331199700/N9XwDkb5iNNco0Zh_OFc67rOlJHScFNMP36bKvu--n_xXxhsUMDP7eybla_IK1y9q1Pt
   }
   static async init() {
     if (typeof window === "undefined") {
       console.debug("Init Called");
     } else {
       if (subscriptionActionCheck === null) {
-        subscriptionActionCheck = new SubscriptionActionCheck();
-        await subscriptionActionCheck?.registerInterval();
+        const settingService = new AllSettingsService();
+        const discordUrl = await settingService.getDiscordUrl();
+        if (discordUrl) {
+          console.debug("Starting with ", discordUrl);
+          subscriptionActionCheck = new SubscriptionActionCheck(discordUrl);
+          await subscriptionActionCheck?.registerInterval();
+        }
       }
       console.debug("Is in client");
     }

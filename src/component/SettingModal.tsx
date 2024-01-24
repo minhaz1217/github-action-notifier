@@ -34,9 +34,9 @@ export default function SettingModal() {
       return;
     }
 
-    if (formData.apiToken?.trim() === "") {
-      setFormData({ ...formData, error: "Api token can't be empty" });
-    }
+    // if (formData.apiToken?.trim() === "") {
+    //   setFormData({ ...formData, error: "Api token can't be empty" });
+    // }
 
     // if (formData.discordWebHookUrl?.trim() === "") {
     //   setFormData({ ...formData, error: "Discord Web Url is needed" });
@@ -49,7 +49,6 @@ export default function SettingModal() {
       });
     }
     setLoading(true);
-    //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
     await allSettingsService.set({
       apiToken: formData.apiToken,
       checkingInterval: Number(formData.checkingInterval),

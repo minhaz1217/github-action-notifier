@@ -75,6 +75,16 @@ export default class AllSettingsService {
     }
     return true;
   }
+
+  async getDiscordUrl() {
+    const discordUrl = await this.settingRepo.getKey(
+      this.DISCORD_WEBHOOK_URL_KEY
+    );
+    if (discordUrl) {
+      return discordUrl.value;
+    }
+    return "";
+  }
 }
 interface AllSettings {
   checkingInterval: number;
