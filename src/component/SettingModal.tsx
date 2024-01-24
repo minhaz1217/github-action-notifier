@@ -11,16 +11,53 @@ export default function SettingModal() {
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<SettingForm>(new SettingForm());
 
+  const allSettingsService = new AllSettingsService();
+  useEffect(() => {
+    getSettings();
+  }, []);
+  const getSettings = async () => {
+    setLoading(true);
+    const allSettings = await allSettingsService.get();
+    if (allSettings) {
+      const newFormData = formData;
+      newFormData.apiToken = allSettings?.apiToken?.trim() ?? "";
+      newFormData.discordWebHookUrl =
+        allSettings?.discordWebHookUrl?.trim() ?? "";
+      newFormData.checkingInterval =
+        allSettings?.checkingInterval.toString() ?? "30";
+      setFormData(newFormData);
+    }
+    setLoading(false);
+  };
   const onSaveClicked = async () => {
-    // setVisible(false)
-    const allSettingsService = new AllSettingsService();
+    if (formData == null) {
+      return;
+    }
 
+    if (formData.apiToken?.trim() === "") {
+      setFormData({ ...formData, error: "Api token can't be empty" });
+    }
+
+    // if (formData.discordWebHookUrl?.trim() === "") {
+    //   setFormData({ ...formData, error: "Discord Web Url is needed" });
+    // }
+
+    if (Number.isInteger(formData.checkingInterval)) {
+      setFormData({
+        ...formData,
+        error: "Enter proper checking interval, enter only seconds",
+      });
+    }
+    setLoading(true);
+    //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
     await allSettingsService.set({
-      apiToken: "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",
-      checkingInterval: 66,
-      discordWebHookUrl: "SOMETHING",
+      apiToken: formData.apiToken,
+      checkingInterval: Number(formData.checkingInterval),
+      discordWebHookUrl: formData.discordWebHookUrl,
     });
     console.debug("Item", await allSettingsService.get());
+    setLoading(false);
+    setVisible(false);
   };
 
   const headerElement = (
@@ -34,6 +71,7 @@ export default function SettingModal() {
         label="Save"
         icon="pi pi-check"
         onClick={() => onSaveClicked()}
+        disabled={loading}
         autoFocus
       />
     </div>
@@ -58,6 +96,7 @@ export default function SettingModal() {
         onHide={() => setVisible(false)}
       >
         <div className="mr-2">
+          {formData?.error && <p className="text-red-500">{formData.error}</p>}
           <label
             htmlFor="checkingInterval"
             className="block text-900 font-medium mb-2"
