@@ -2,11 +2,26 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
+import Repository from "../backend/repository/Repository";
+import pb from "../backend/db";
+import AllSettingsService from "../backend/services/AllSettingsService";
 
 export default function SettingModal() {
   const [visible, setVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<SettingForm>(new SettingForm());
+
+  const onSaveClicked = async () => {
+    // setVisible(false)
+    const allSettingsService = new AllSettingsService();
+
+    await allSettingsService.set({
+      apiToken: "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",
+      checkingInterval: 66,
+      discordWebHookUrl: "SOMETHING",
+    });
+    console.debug("Item", await allSettingsService.get());
+  };
 
   const headerElement = (
     <div className="inline-flex align-items-center justify-content-center gap-2">
@@ -18,7 +33,7 @@ export default function SettingModal() {
       <Button
         label="Save"
         icon="pi pi-check"
-        onClick={() => setVisible(false)}
+        onClick={() => onSaveClicked()}
         autoFocus
       />
     </div>
