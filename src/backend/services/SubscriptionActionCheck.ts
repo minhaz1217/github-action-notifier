@@ -48,7 +48,7 @@ class SubscriptionActionCheck {
     this.inProgressList.clear();
     const githubToken = await this.githubTokenService.get();
     if (githubToken === null || githubToken?.key?.trim() === "") {
-      throw Error("Git hub token not found");
+      throw Error("Github token not found");
     }
     this.octokit = new OctoKitService(githubToken.value).get();
 

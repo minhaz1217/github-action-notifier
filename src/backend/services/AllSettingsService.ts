@@ -30,13 +30,13 @@ export default class AllSettingsService {
     if (settings !== null) {
       const allSettings: AllSettings = {
         apiToken:
-          settings.filter((x) => x.key === this.TOKEN_KEY)[0].value ?? "",
+          settings.filter((x) => x.key === this.TOKEN_KEY)[0]?.value ?? "",
         discordWebHookUrl:
           settings.filter((x) => x.key === this.DISCORD_WEBHOOK_URL_KEY)[0]
             ?.value ?? "",
         checkingInterval: Number.parseInt(
           settings.filter((x) => x.key === this.CHECKING_INTERVAL_KEY)[0]
-            .value ?? 30
+            ?.value ?? 30
         ),
       };
       return allSettings;

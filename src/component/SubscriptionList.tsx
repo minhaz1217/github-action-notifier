@@ -51,7 +51,7 @@ const SubscriptionList = ({
           />
         ))
       ) : (
-        <p className="text-red-400">No Subscription</p>
+        <p className="text-red-400">No Subscription please add a repo by searching for repo. (Add github token from settings to search for private repo)</p>
       )}
     </>
   );
