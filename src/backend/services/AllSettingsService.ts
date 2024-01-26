@@ -85,6 +85,16 @@ export default class AllSettingsService {
     }
     return "";
   }
+
+  async getCheckingInterval() {
+    const discordUrl = await this.settingRepo.getKey(
+      this.CHECKING_INTERVAL_KEY
+    );
+    if (discordUrl) {
+      return Number.parseInt(discordUrl.value) ?? 30;
+    }
+    return 30;
+  }
 }
 interface AllSettings {
   checkingInterval: number;

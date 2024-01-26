@@ -7,6 +7,7 @@ import Discord from "../notification-providers/Discord";
 import AllSettingsService from "./AllSettingsService";
 
 let subscriptionActionCheck: SubscriptionActionCheck | null = null;
+let called: boolean = false;
 
 class SubscriptionActionCheck {
   subscriptionService: SubscriptionService;
@@ -15,26 +16,33 @@ class SubscriptionActionCheck {
   private octokit: Octokit | null = null;
   private inProgressList: Set<number> = new Set();
   private discord: Discord;
-
-  private constructor(discordUrl: string) {
+  private _checkingInterval: number = 30;
+  private constructor(discordUrl: string, checkingInterval: number) {
+    this._checkingInterval = checkingInterval;
+    console.debug("Constructor called");
     this.subscriptionService = new SubscriptionService();
     this.githubTokenService = new GithubTokenService();
+
     this.discord = new Discord(discordUrl);
   }
   static async init() {
     if (typeof window === "undefined") {
       console.debug("Init Called");
     } else {
-      if (subscriptionActionCheck === null) {
+      if (called === false && subscriptionActionCheck === null) {
+        called = true;
         const settingService = new AllSettingsService();
         const discordUrl = await settingService.getDiscordUrl();
+        const intervalTime = await settingService.getCheckingInterval();
         if (discordUrl) {
-          console.debug("Starting with ", discordUrl);
-          subscriptionActionCheck = new SubscriptionActionCheck(discordUrl);
+          subscriptionActionCheck = new SubscriptionActionCheck(
+            discordUrl,
+            intervalTime
+          );
+          console.debug("Is in client", subscriptionActionCheck.intervalId);
           await subscriptionActionCheck?.registerInterval();
         }
       }
-      console.debug("Is in client");
     }
     return subscriptionActionCheck;
   }
@@ -55,7 +63,7 @@ class SubscriptionActionCheck {
 
     this.intervalId = setInterval(() => {
       this.checkSubscriptionList();
-    }, 10000);
+    }, this._checkingInterval * 1000);
   }
 
   async checkSubscriptionList() {
