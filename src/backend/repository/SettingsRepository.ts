@@ -14,9 +14,8 @@ export default class SettingsRepository {
     }
     console.debug("User", this.repo.getUserId(), "Key", key);
     const setting = await this.repo.getFirstOne<Settings>(
-      pb.filter("key={:key}&&user={:user}", {
+      pb.filter("key={:key}", {
         key: key,
-        user: this.repo.getUserId(),
       })
     );
     if (setting) {
