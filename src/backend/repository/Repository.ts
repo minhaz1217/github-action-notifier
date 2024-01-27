@@ -34,7 +34,10 @@ export default class Repository {
       | FormData,
     options?: RecordOptions
   ) {
-    return await this.db.create<T>(bodyParams, options);
+    return await this.db.create<T>(
+      { ...bodyParams, user: this.getUserId() },
+      options
+    );
   }
 
   async update<T>(
@@ -46,7 +49,11 @@ export default class Repository {
       | FormData,
     options?: RecordOptions
   ) {
-    return await this.db.update<T>(id, bodyParams, options);
+    return await this.db.update<T>(
+      id,
+      { ...bodyParams, user: this.getUserId() },
+      options
+    );
   }
   // fetch a paginated records list
   resultList = async () =>

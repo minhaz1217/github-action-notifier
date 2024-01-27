@@ -9,10 +9,6 @@ export default class SettingsRepository {
     this.repo = new Repository(Tables.SETTINGS);
   }
   async getKey(key: string) {
-    if (this.repo.getUserId() === null) {
-      return;
-    }
-    console.debug("User", this.repo.getUserId(), "Key", key);
     const setting = await this.repo.getFirstOne<Settings>(
       pb.filter("key={:key}", {
         key: key,
@@ -39,14 +35,12 @@ export default class SettingsRepository {
       return await this.repo.update<Settings>(setting.id, {
         key: key,
         value: value,
-        user: this.repo.getUserId(),
       });
     }
     // insert operation
     return await this.repo.create<Settings>({
       key: key,
       value: value,
-      user: this.repo.getUserId(),
     });
   }
 
