@@ -1,15 +1,15 @@
 import SettingsRepository from "../repository/SettingsRepository";
 
 export default class GithubTokenService {
-  private readonly TOKEN_KEY = "API_KEY" as const;
+  private readonly GITHUB_API_KEY_KEY = "API_KEY" as const;
   private readonly settingRepo: SettingsRepository;
   public apiKey: string | null = null;
   constructor() {
     this.settingRepo = new SettingsRepository();
   }
   async get() {
-    const settings = await this.settingRepo.getKey(this.TOKEN_KEY);
-    if (settings !== null) {
+    const settings = await this.settingRepo.getKey(this.GITHUB_API_KEY_KEY);
+    if (settings) {
       this.apiKey = settings.value;
     }
     return settings;
@@ -17,7 +17,7 @@ export default class GithubTokenService {
 
   async set(apiKey: string) {
     const settings = await this.settingRepo.setKey(
-      this.TOKEN_KEY,
+      this.GITHUB_API_KEY_KEY,
       apiKey.trim()
     );
     if (settings !== null) {
@@ -27,7 +27,7 @@ export default class GithubTokenService {
   }
 
   async remove() {
-    const settings = await this.settingRepo.removeKey(this.TOKEN_KEY);
+    const settings = await this.settingRepo.removeKey(this.GITHUB_API_KEY_KEY);
     if (settings === true) {
       this.apiKey = null;
     }

@@ -74,6 +74,19 @@ export default class Repository {
     return await this.db.authWithPassword(email, password);
   }
 
+  token() {
+    if (this._pb?.authStore?.token) {
+      return this._pb?.authStore?.token as string;
+    }
+    return null;
+  }
+
+  getUserId() {
+    if (this._pb?.authStore?.model?.id) {
+      return this._pb?.authStore?.model?.id as string;
+    }
+    return null;
+  }
   clear() {
     this._pb.authStore.clear();
   }

@@ -9,9 +9,14 @@ export default class SettingsRepository {
     this.repo = new Repository(Tables.SETTINGS);
   }
   async getKey(key: string) {
+    if (this.repo.getUserId() === null) {
+      return;
+    }
+    console.debug("User", this.repo.getUserId(), "Key", key);
     const setting = await this.repo.getFirstOne<Settings>(
-      pb.filter("key = {:key}", {
+      pb.filter("key={:key}&&user={:user}", {
         key: key,
+        user: this.repo.getUserId(),
       })
     );
     if (setting) {
@@ -21,21 +26,34 @@ export default class SettingsRepository {
   }
 
   async setKey(key: string, value: string) {
+    if (this.repo.getUserId() === null) {
+      throw Error("Log in first");
+    }
+
     const setting = await this.getKey(key);
-    if (setting !== null) {
+    if (setting) {
+      // saving the same value so no need for update call
+      if (setting.value === value) {
+        return setting;
+      }
       // update operation
       return await this.repo.update<Settings>(setting.id, {
         key: key,
         value: value,
+        user: this.repo.getUserId(),
       });
     }
     // insert operation
-    return await this.repo.create<Settings>({ key: key, value: value });
+    return await this.repo.create<Settings>({
+      key: key,
+      value: value,
+      user: this.repo.getUserId(),
+    });
   }
 
   async removeKey(key: string) {
     const setting = await this.getKey(key);
-    if (setting !== null) {
+    if (setting) {
       return await this.repo.delete(setting.id);
     }
     return false;

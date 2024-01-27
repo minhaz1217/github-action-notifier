@@ -19,7 +19,7 @@ export default class AllSettingsService {
   async get() {
     const settings = await this.repo.db.getFullList<Settings>({
       filter: pb.filter(
-        "key = {:tokenKey} || key = {:webhookKey} || key = {:intervalKey}",
+        "key={:tokenKey}||key={:webhookKey}||key={:intervalKey}",
         {
           tokenKey: this.TOKEN_KEY,
           webhookKey: this.DISCORD_WEBHOOK_URL_KEY,

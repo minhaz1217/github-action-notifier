@@ -21,17 +21,17 @@ const RepoList = ({
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [repoSearchText, setRepoSearchText] = useState<string>("");
   const [searchResult, setSearchResult] = useState<any[] | null>(null);
-  const tokenService: GithubTokenService = new GithubTokenService();
+  const githubApiKeyService: GithubTokenService = new GithubTokenService();
   useEffect(() => {
     checkApiKey();
   }, [apiKey]);
 
   const checkApiKey = async () => {
-    const token = await tokenService.get();
-    if (token !== null && apiKey !== token.value) {
+    const token = await githubApiKeyService.get();
+    if (token && apiKey !== token.value) {
       setApiKey(token.value);
     }
-    console.debug("Token", token);
+    console.debug("API KEY", token);
   };
   const onSearchClicked = async () => {
     if (apiKey === null || repoSearchText.trim() === "") {
