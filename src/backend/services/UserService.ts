@@ -1,4 +1,5 @@
 import LocalStorageKeys from "../LocalStorageKeys";
+import Tables from "../Tables";
 import Repository from "../repository/Repository";
 import LocalStorageService from "./LocalStorageService";
 
@@ -7,7 +8,7 @@ export default class UserService {
   private _userRepo: Repository;
   private _token: string | null = null;
   constructor() {
-    this._userRepo = new Repository("users");
+    this._userRepo = new Repository(Tables.USERS);
     this._token = this._localStorage.get(LocalStorageKeys.AUTH);
   }
 
