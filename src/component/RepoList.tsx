@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import GithubTokenService from "../backend/services/GithubTokenService";
 import { Button } from "primereact/button";
 import { Octokit } from "@octokit/rest";
@@ -33,7 +33,8 @@ const RepoList = ({
     }
     console.debug("API KEY", token);
   };
-  const onSearchClicked = async () => {
+  const onSearchClicked = async (e: FormEvent) => {
+    e.preventDefault();
     if (apiKey === null || repoSearchText.trim() === "") {
       return;
     }
@@ -74,19 +75,21 @@ const RepoList = ({
   };
   return (
     <div>
-      <InputText
-        placeholder="Search Repo"
-        value={repoSearchText}
-        onChange={(e) => setRepoSearchText(e.target.value)}
-      />
-      <Button
-        className="ml-2"
-        label="Search"
-        type="button"
-        icon="pi pi-search"
-        onClick={onSearchClicked}
-        rounded
-      />
+      <form onSubmit={(e) => onSearchClicked(e)}>
+        <InputText
+          placeholder="Search Repo"
+          value={repoSearchText}
+          onChange={(e) => setRepoSearchText(e.target.value)}
+        />
+        <Button
+          className="ml-2"
+          label="Search"
+          type="button"
+          icon="pi pi-search"
+          onClick={onSearchClicked}
+          rounded
+        />
+      </form>
       <div>
         {searchResult &&
           searchResult.map((item) => (

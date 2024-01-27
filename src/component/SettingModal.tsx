@@ -50,9 +50,9 @@ export default function SettingModal() {
     }
     setLoading(true);
     await allSettingsService.set({
-      apiToken: formData.apiToken,
+      apiToken: formData.apiToken.trim(),
       checkingInterval: Number(formData.checkingInterval),
-      discordWebHookUrl: formData.discordWebHookUrl,
+      discordWebHookUrl: formData.discordWebHookUrl.trim(),
     });
     console.debug("Item", await allSettingsService.get());
     setLoading(false);
