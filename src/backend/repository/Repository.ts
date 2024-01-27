@@ -5,9 +5,11 @@ import { Settings } from "../domain/Settings";
 export default class Repository {
   private readonly _collectionName: string;
   public readonly db: RecordService;
+  private readonly _pb;
   constructor(collectionName: string) {
     this._collectionName = collectionName;
-    this.db = pb.collection(this._collectionName);
+    this._pb = pb;
+    this.db = this._pb.collection(this._collectionName);
   }
   async getList<T>(pageIndex: number, pageSize: number, filter: string) {
     return await this.db.getList<T>(pageIndex, pageSize, {
@@ -70,5 +72,9 @@ export default class Repository {
 
   async authWithPassword(email: string, password: string) {
     return await this.db.authWithPassword(email, password);
+  }
+
+  clear() {
+    this._pb.authStore.clear();
   }
 }

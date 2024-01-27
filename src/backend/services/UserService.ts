@@ -1,3 +1,4 @@
+import LocalStorageKeys from "../LocalStorageKeys";
 import Repository from "../repository/Repository";
 import LocalStorageService from "./LocalStorageService";
 
@@ -5,10 +6,9 @@ export default class UserService {
   private _localStorage: LocalStorageService = new LocalStorageService();
   private _userRepo: Repository;
   private _token: string | null = null;
-  private readonly authKey = "auth" as const;
   constructor() {
     this._userRepo = new Repository("users");
-    this._token = this._localStorage.get(this.authKey);
+    this._token = this._localStorage.get(LocalStorageKeys.AUTH);
   }
 
   async create(email: string, password: string, confirmPassword: string) {
@@ -22,21 +22,22 @@ export default class UserService {
 
   async authWithPassword(email: string, password: string) {
     this._token = null;
-    this._localStorage.set(this.authKey, this._token);
+    this._localStorage.set(LocalStorageKeys.AUTH, this._token);
     const authenticatedUser = await this._userRepo.authWithPassword(
       email,
       password
     );
     if (authenticatedUser && authenticatedUser?.token) {
       this._token = authenticatedUser.token;
-      this._localStorage.set(this.authKey, this._token);
+      this._localStorage.set(LocalStorageKeys.AUTH, this._token);
     }
     return authenticatedUser;
   }
 
   logout() {
     this._token = null;
-    this._localStorage.set(this.authKey, null);
+    this._localStorage.set(LocalStorageKeys.AUTH, null);
+    this._userRepo.clear();
   }
 
   isLoggedIn() {
