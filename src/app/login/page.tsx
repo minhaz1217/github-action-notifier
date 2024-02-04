@@ -2,13 +2,16 @@
 import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import UserService from "../../backend/services/UserService";
 import { ClientResponseError } from "pocketbase";
+import { Toast } from "primereact/toast";
 
 export default function Login() {
   const [formData, setFormData] = useState<LoginForm>(new LoginForm());
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { push } = useRouter();
+  const toast = useRef(null);
 
   const clickedLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -31,23 +34,40 @@ export default function Login() {
     try {
       const userService = new UserService();
 
+      setIsLoading(true);
       const loggedInUser = await userService.authWithPassword(
         formData.email,
         formData.password
       );
-      console.debug("Logged in User Token", userService.token());
+      // console.debug("Logged in User Token", userService.token());
 
       if (loggedInUser?.record?.id) {
-        // TODO: show success toast message
+        if (toast) {
+          toast.current.show({
+            severity: "success",
+            summary: "Logged In",
+            detail: "Logged in successfully",
+            life: 3000,
+          });
+        }
         push("/dashboard");
       }
     } catch (e) {
-      // TODO: send notification
+      if (toast) {
+        toast.current.show({
+          severity: "error",
+          summary: "Failed",
+          detail: (e as ClientResponseError).message,
+          life: 3000,
+        });
+      }
       console.error((e as ClientResponseError).message);
     }
+    setIsLoading(false);
   };
   return (
     <div className="flex flex-row items-center justify-center w-full">
+      <Toast ref={toast} position="bottom-right" />
       <div className="surface-card p-4 shadow-2 border-round w-full lg:w-3/5 mt-28">
         <div className="text-center mb-5">
           {/* <img
@@ -101,25 +121,11 @@ export default function Login() {
               }
             />
 
-            {/* <div className="flex align-items-center justify-content-between mb-6">
-            <div className="flex align-items-center">
-              <Checkbox
-                id="rememberme"
-                // onChange={(e) => setChecked(e.checked)}
-                checked={false}
-                className="mr-2"
-              />
-              <label htmlFor="rememberme">Remember me</label>
-            </div>
-            <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
-              Forgot your password?
-            </a>
-          </div> */}
-
             <Button
               label="Sign In"
               icon="pi pi-user"
               className="w-full"
+              disabled={isLoading}
               onClick={clickedLogin}
             />
           </form>
