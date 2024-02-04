@@ -3,17 +3,15 @@ import { useEffect, useState } from "react";
 import SubscriptionService from "../backend/services/SubscriptionService";
 import { Subscription } from "../backend/domain/Subscription";
 import RepoBasic from "./RepoBasic";
-import {
-  IObservable,
-  IObserver,
-  NotifierBuilder,
-} from "../backend/patterns/DataObserver";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { IObservable, NotifierBuilder } from "../backend/patterns/DataObserver";
 
 const SubscriptionList = ({
   updateOnSubscriptionChanged,
 }: {
   updateOnSubscriptionChanged: IObservable;
 }) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [repoList, setRepoList] = useState<Subscription[]>([]);
   const subscriptionService = new SubscriptionService();
 
@@ -27,32 +25,40 @@ const SubscriptionList = ({
   }, []);
 
   const getSubscriptionList = async () => {
+    setLoading(true);
     const list = await subscriptionService.getList();
+    setLoading(false);
     setRepoList(list?.items ?? []);
   };
 
-  const onSubscribeClicked = async (repo: Subscription) => {
+  const onUnSubscribeClicked = async (repo: Subscription) => {
+    setLoading(true);
     const deleteSuccessful = await subscriptionService.delete(repo.id);
     if (deleteSuccessful === true) {
       setRepoList(repoList.filter((x) => x.id !== repo.id));
     }
+    setLoading(false);
   };
 
   return (
     <>
       <h2>Subscription List</h2>
-      {repoList && repoList.length > 0 ? (
-        repoList.map((x) => (
-          <RepoBasic
-            buttonClicked={onSubscribeClicked}
-            isSubscribed={true}
-            key={x.id}
-            repo={x as any}
-          />
-        ))
-      ) : (
-        <p className="text-red-400">No Subscription please add a repo by searching for repo. (Add github token from settings to search for private repo)</p>
-      )}
+      {loading && <ProgressSpinner />}
+      {repoList && repoList.length > 0
+        ? repoList.map((x) => (
+            <RepoBasic
+              buttonClicked={onUnSubscribeClicked}
+              isSubscribed={true}
+              key={x.id}
+              repo={x as any}
+            />
+          ))
+        : !loading && (
+            <p className="text-red-400">
+              No Subscription please add a repo by searching for repo. (Add
+              github token from settings to search for private repo)
+            </p>
+          )}
     </>
   );
 };
