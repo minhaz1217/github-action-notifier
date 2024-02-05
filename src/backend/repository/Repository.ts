@@ -11,12 +11,15 @@ export default class Repository {
     this._pb = pb;
     this.db = this._pb.collection(this._collectionName);
   }
+
+  /** gets list of items by page index, page size and filter, make the filter using repo.filter */
   async getList<T>(pageIndex: number, pageSize: number, filter: string) {
     return await this.db.getList<T>(pageIndex, pageSize, {
       filter: filter,
     });
   }
 
+  /** get first one that matches the filter, make the filter using repo.filter */
   async getFirstOne<T>(filter: string) {
     try {
       return await this.db.getFirstListItem<Settings>(filter);
@@ -26,6 +29,7 @@ export default class Repository {
     return null;
   }
 
+  /** create in db */
   async create<T>(
     bodyParams?:
       | {
@@ -40,6 +44,7 @@ export default class Repository {
     );
   }
 
+  /** update in db */
   async update<T>(
     id: string,
     bodyParams?:
@@ -55,32 +60,18 @@ export default class Repository {
       options
     );
   }
-  // fetch a paginated records list
-  resultList = async () =>
-    await this.db.getList(1, 50, {
-      filter: 'created >= "2022-01-01 00:00:00" && someField1 != someField2',
-    });
 
-  // you can also fetch all records at once via getFullList
-  records = async () =>
-    await this.db.getFullList({
-      sort: "-created",
-    });
-
-  // or fetch only the first record that matches the specified filter
-  record = async () =>
-    await this.db.getFirstListItem('someField="test"', {
-      expand: "relField1,relField2.subRelField",
-    });
-
+  /** delete form db */
   async delete(id: string) {
     return await this.db.delete(id);
   }
 
+  /** logs in with email and password */
   async authWithPassword(email: string, password: string) {
     return await this.db.authWithPassword(email, password);
   }
 
+  /** get token from pb authstore */
   token() {
     if (this._pb?.authStore?.token) {
       return this._pb?.authStore?.token as string;
@@ -88,12 +79,20 @@ export default class Repository {
     return null;
   }
 
+  /** gets user id from pb authstore model */
   getUserId() {
     if (this._pb?.authStore?.model?.id) {
       return this._pb?.authStore?.model?.id as string;
     }
     return null;
   }
+
+  /** Adapter for pb.filter */
+  filter(raw: string, params?: { [key: string]: any }): string {
+    return this._pb.filter(raw, params);
+  }
+
+  /** clears pb authstore */
   clear() {
     this._pb.authStore.clear();
   }

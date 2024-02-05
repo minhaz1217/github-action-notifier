@@ -10,7 +10,7 @@ export default class SettingsRepository {
   }
   async getKey(key: string) {
     const setting = await this.repo.getFirstOne<Settings>(
-      pb.filter("key={:key}", {
+      this.repo.filter("key={:key}", {
         key: key,
       })
     );

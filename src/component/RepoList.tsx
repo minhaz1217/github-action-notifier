@@ -6,12 +6,10 @@ import { Octokit } from "@octokit/rest";
 import { InputText } from "primereact/inputtext";
 import { ProgressSpinner } from "primereact/progressspinner";
 import RepoBasic from "./RepoBasic";
-import Repository from "../backend/repository/Repository";
-import Tables from "../backend/Tables";
 import { RepoModel } from "../backend/models/RepoModel";
 import { Subscription } from "../backend/domain/Subscription";
-import pb from "../backend/db";
 import { INotifier } from "../backend/patterns/DataObserver";
+import SubscriptionService from "../backend/services/SubscriptionService";
 
 const RepoList = ({
   notifySubscriptionChanged,
@@ -33,7 +31,6 @@ const RepoList = ({
     if (token && apiKey !== token.value) {
       setApiKey(token.value);
     }
-    console.debug("API KEY", token);
     setLoading(false);
   };
   const onSearchClicked = async (e: FormEvent) => {
@@ -50,26 +47,21 @@ const RepoList = ({
     });
     setLoading(false);
     setSearchResult(searchResult.data.items);
-    console.debug("Result", searchResult.data.items);
   };
+
   const onSubscribeClicked = async (repoDetails: RepoModel) => {
-    const subscriptionRepository = new Repository(Tables.SUBSCRIPTION);
+    const subscriptionService = new SubscriptionService();
     const payload: Subscription = {
       githubId: repoDetails.id,
       name: repoDetails.name,
       url: repoDetails.html_url,
       description: repoDetails.description,
       owner: repoDetails?.owner?.login ?? "",
+      isEnabled: true,
     } as Subscription;
 
-    const alreadyExists =
-      await subscriptionRepository.getFirstOne<Subscription>(
-        pb.filter("name = {:key}", {
-          key: payload.name,
-        })
-      );
-    if (alreadyExists === null) {
-      await subscriptionRepository.create<Subscription>(payload);
+    const createdSuccessfully = await subscriptionService.create(payload);
+    if (createdSuccessfully !== null) {
       notifySubscriptionChanged.notifyAll();
     }
 

@@ -2,8 +2,6 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
-import Repository from "../backend/repository/Repository";
-import pb from "../backend/db";
 import AllSettingsService from "../backend/services/AllSettingsService";
 
 export default function SettingModal() {

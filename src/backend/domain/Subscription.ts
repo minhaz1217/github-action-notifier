@@ -6,4 +6,5 @@ export class Subscription extends Base {
   githubId: string = "";
   description: string = "";
   owner: string = "";
+  isEnabled: boolean = false;
 }
