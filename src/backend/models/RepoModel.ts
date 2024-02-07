@@ -8,4 +8,5 @@ export interface RepoModel {
     id: string;
     login: string;
   };
+  isEnabled: boolean;
 }

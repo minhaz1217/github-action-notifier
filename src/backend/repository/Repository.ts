@@ -22,11 +22,19 @@ export default class Repository {
   /** get first one that matches the filter, make the filter using repo.filter */
   async getFirstOne<T>(filter: string) {
     try {
-      return await this.db.getFirstListItem<Settings>(filter);
+      return await this.db.getFirstListItem<T>(filter);
     } catch (ex: any) {
       // console.error("error", ex, filter);
     }
     return null;
+  }
+
+  async getById<T>(id: string) {
+    return await this.getFirstOne<T>(
+      this.filter("id={:id}", {
+        id: id,
+      })
+    );
   }
 
   /** create in db */

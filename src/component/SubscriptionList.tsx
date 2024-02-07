@@ -40,6 +40,17 @@ const SubscriptionList = ({
     setLoading(false);
   };
 
+  const onIsEnabledChanged = async (id: string, isEnabled: boolean) => {
+    const updated = await subscriptionService.changeIsEnabled(id, isEnabled);
+    if (updated) {
+      repoList.forEach((x) => {
+        if (x.id === id) {
+          x.isEnabled = isEnabled;
+        }
+      });
+      setRepoList([...repoList]);
+    }
+  };
   return (
     <>
       <h2>Subscription List</h2>
@@ -51,6 +62,7 @@ const SubscriptionList = ({
               isSubscribed={true}
               key={x.id}
               repo={x as any}
+              onIsEnabledChanged={onIsEnabledChanged}
             />
           ))
         : !loading && (

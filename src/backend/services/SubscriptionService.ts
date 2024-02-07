@@ -18,13 +18,28 @@ export default class SubscriptionService {
   };
 
   getList = async () => {
-    return await this.subscriptionRepo.getList<Subscription>(0, 10, "");
+    return await this.subscriptionRepo.getList<Subscription>(
+      0,
+      1000000,
+      this.subscriptionRepo.filter("isEnabled={:isEnabled}", {
+        isEnabled: true,
+      })
+    );
   };
 
   create = async (payload: Subscription) => {
     const alreadyExists = await this.getByName(payload.name);
     if (alreadyExists === null) {
       return await this.subscriptionRepo.create<Subscription>(payload);
+    }
+    return null;
+  };
+
+  changeIsEnabled = async (id: string, isEnabled: boolean) => {
+    const subscription = await this.subscriptionRepo.getById<Subscription>(id);
+    if (subscription !== null) {
+      subscription.isEnabled = isEnabled;
+      return await this.subscriptionRepo.update(subscription.id, subscription);
     }
     return null;
   };
