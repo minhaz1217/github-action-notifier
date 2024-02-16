@@ -11,4 +11,8 @@ export default class LocalStorageService {
     }
     return localStorage.setItem(key, value);
   }
+
+  remove(key: string) {
+    return localStorage.removeItem(key);
+  }
 }

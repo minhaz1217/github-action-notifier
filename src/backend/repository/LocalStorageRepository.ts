@@ -66,7 +66,7 @@ export class LocalStorageRepository implements IRepository {
     const key = this.getLocalStorageKey(id);
     this.localStorageService.set(key, JSON.stringify(payload));
   }
-  
+
   async update<T>(
     id: string,
     payload?: T,
@@ -89,9 +89,11 @@ export class LocalStorageRepository implements IRepository {
     return payload;
   }
 
-  delete(id: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  async delete(id: string): Promise<boolean> {
+    this.localStorageService.remove(this.getLocalStorageKey(id));
+    return true;
   }
+  
   authWithPassword(
     email: string,
     password: string

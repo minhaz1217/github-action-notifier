@@ -79,10 +79,10 @@ const RepoList = ({
 
     const mySettings = await repo.create<Settings>(settings);
 
+    const deleted = await repo.delete(settings.id);
     const getSettings = await repo.getById<Settings>(mySettings.id);
 
     console.debug("After get", getSettings?.value);
-    }
   };
   return (
     <div>
