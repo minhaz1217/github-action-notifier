@@ -1,7 +1,7 @@
 import Tables from "../Tables";
-import pb from "../db";
 import { Settings } from "../domain/Settings";
-import Repository from "../repository/Repository";
+import { IRepository } from "../repository/IRepository";
+import { RepositoryFactory } from "../repository/RepositoryFactory";
 import SettingsRepository from "../repository/SettingsRepository";
 
 export default class AllSettingsService {
@@ -9,24 +9,24 @@ export default class AllSettingsService {
   private readonly DISCORD_WEBHOOK_URL_KEY = "DISCORD_WEBHOOK_URL_KEY" as const;
   private readonly CHECKING_INTERVAL_KEY = "CHECKING_INTERVAL_KEY" as const;
 
-  private readonly repo: Repository;
+  private readonly repo: IRepository;
   private readonly settingRepo: SettingsRepository;
   public apiKey: string | null = null;
   constructor() {
-    this.repo = new Repository(Tables.SETTINGS);
+    this.repo = RepositoryFactory.getRepository(Tables.SETTINGS);
     this.settingRepo = new SettingsRepository();
   }
   async get() {
-    const settings = await this.repo.db.getFullList<Settings>({
-      filter: this.repo.filter(
+    const settings = await this.repo.getFullList<Settings>(
+      this.repo.filter(
         "key={:tokenKey}||key={:webhookKey}||key={:intervalKey}",
         {
           tokenKey: this.TOKEN_KEY,
           webhookKey: this.DISCORD_WEBHOOK_URL_KEY,
           intervalKey: this.CHECKING_INTERVAL_KEY,
         }
-      ),
-    });
+      )
+    );
     if (settings !== null) {
       const allSettings: AllSettings = {
         apiToken:

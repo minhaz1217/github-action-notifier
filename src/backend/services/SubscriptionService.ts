@@ -1,11 +1,14 @@
 import Tables from "../Tables";
 import { Subscription } from "../domain/Subscription";
-import Repository from "../repository/Repository";
+import { IRepository } from "../repository/IRepository";
+import { RepositoryFactory } from "../repository/RepositoryFactory";
 
 export default class SubscriptionService {
-  private subscriptionRepo: Repository;
+  private subscriptionRepo: IRepository;
   constructor() {
-    this.subscriptionRepo = new Repository(Tables.SUBSCRIPTION);
+    this.subscriptionRepo = RepositoryFactory.getRepository(
+      Tables.SUBSCRIPTION
+    );
   }
 
   getByName = async (name: string) => {

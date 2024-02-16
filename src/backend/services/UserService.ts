@@ -1,14 +1,15 @@
 import LocalStorageKeys from "../LocalStorageKeys";
 import Tables from "../Tables";
-import Repository from "../repository/Repository";
+import { IRepository } from "../repository/IRepository";
+import { RepositoryFactory } from "../repository/RepositoryFactory";
 import LocalStorageService from "./LocalStorageService";
 
 export default class UserService {
   private _localStorage: LocalStorageService = new LocalStorageService();
-  private _userRepo: Repository;
+  private _userRepo: IRepository;
   private _token: string | null = null;
   constructor() {
-    this._userRepo = new Repository(Tables.USERS);
+    this._userRepo = RepositoryFactory.getRepository(Tables.USERS);
     this._token = this._localStorage.get(LocalStorageKeys.AUTH);
   }
 
@@ -42,7 +43,8 @@ export default class UserService {
   }
 
   isLoggedIn() {
-    return this._token !== null;
+    // TODO: remove this true when deploying in real.
+    return true || this._token !== null;
   }
   token(): string | null {
     return this._token;

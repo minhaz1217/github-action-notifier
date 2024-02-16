@@ -1,12 +1,12 @@
 import Tables from "../Tables";
-import pb from "../db";
 import { Settings } from "../domain/Settings";
-import Repository from "./Repository";
+import { IRepository } from "./IRepository";
+import { RepositoryFactory } from "./RepositoryFactory";
 
 export default class SettingsRepository {
-  private readonly repo: Repository;
+  private readonly repo: IRepository;
   constructor() {
-    this.repo = new Repository(Tables.SETTINGS);
+    this.repo = RepositoryFactory.getRepository(Tables.SETTINGS);
   }
   async getKey(key: string) {
     const setting = await this.repo.getFirstOne<Settings>(

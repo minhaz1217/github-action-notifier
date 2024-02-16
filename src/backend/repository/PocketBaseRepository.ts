@@ -1,8 +1,14 @@
-import { RecordOptions, RecordService } from "pocketbase";
+import {
+  ListResult,
+  RecordAuthResponse,
+  RecordModel,
+  RecordOptions,
+  RecordService,
+} from "pocketbase";
 import pb from "../db";
-import { Settings } from "../domain/Settings";
+import { IRepository } from "./IRepository";
 
-export default class Repository {
+export default class PocketBaseRepository implements IRepository {
   private readonly _collectionName: string;
   public readonly db: RecordService;
   private readonly _pb;
@@ -13,14 +19,25 @@ export default class Repository {
   }
 
   /** gets list of items by page index, page size and filter, make the filter using repo.filter */
-  async getList<T>(pageIndex: number, pageSize: number, filter: string) {
+  async getList<T>(
+    pageIndex: number,
+    pageSize: number,
+    filter: string
+  ): Promise<ListResult<T>> {
     return await this.db.getList<T>(pageIndex, pageSize, {
       filter: filter,
     });
   }
 
+  /** gets full list of record */
+  getFullList<T>(filter: string): Promise<T[]> {
+    return this.db.getFullList<T>({
+      filter: filter,
+    });
+  }
+
   /** get first one that matches the filter, make the filter using repo.filter */
-  async getFirstOne<T>(filter: string) {
+  async getFirstOne<T>(filter: string): Promise<T | null> {
     try {
       return await this.db.getFirstListItem<T>(filter);
     } catch (ex: any) {
@@ -29,7 +46,8 @@ export default class Repository {
     return null;
   }
 
-  async getById<T>(id: string) {
+  /** get item by id */
+  async getById<T>(id: string): Promise<T | null> {
     return await this.getFirstOne<T>(
       this.filter("id={:id}", {
         id: id,
@@ -45,7 +63,7 @@ export default class Repository {
         }
       | FormData,
     options?: RecordOptions
-  ) {
+  ): Promise<T> {
     return await this.db.create<T>(
       { ...bodyParams, user: this.getUserId() },
       options
@@ -61,7 +79,7 @@ export default class Repository {
         }
       | FormData,
     options?: RecordOptions
-  ) {
+  ): Promise<T> {
     return await this.db.update<T>(
       id,
       { ...bodyParams, user: this.getUserId() },
@@ -70,17 +88,20 @@ export default class Repository {
   }
 
   /** delete form db */
-  async delete(id: string) {
+  async delete(id: string): Promise<boolean> {
     return await this.db.delete(id);
   }
 
   /** logs in with email and password */
-  async authWithPassword(email: string, password: string) {
+  async authWithPassword(
+    email: string,
+    password: string
+  ): Promise<RecordAuthResponse<RecordModel>> {
     return await this.db.authWithPassword(email, password);
   }
 
   /** get token from pb authstore */
-  token() {
+  token(): string | null {
     if (this._pb?.authStore?.token) {
       return this._pb?.authStore?.token as string;
     }
@@ -88,7 +109,7 @@ export default class Repository {
   }
 
   /** gets user id from pb authstore model */
-  getUserId() {
+  getUserId(): string | null {
     if (this._pb?.authStore?.model?.id) {
       return this._pb?.authStore?.model?.id as string;
     }
@@ -101,7 +122,7 @@ export default class Repository {
   }
 
   /** clears pb authstore */
-  clear() {
+  clear(): void {
     this._pb.authStore.clear();
   }
 }
