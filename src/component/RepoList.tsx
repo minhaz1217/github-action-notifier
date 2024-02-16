@@ -10,6 +10,9 @@ import { RepoModel } from "../backend/models/RepoModel";
 import { Subscription } from "../backend/domain/Subscription";
 import { INotifier } from "../backend/patterns/DataObserver";
 import SubscriptionService from "../backend/services/SubscriptionService";
+import { LocalStorageRepository } from "../backend/repository/LocalStorageRepository";
+import { Settings } from "../backend/domain/Settings";
+import Tables from "../backend/Tables";
 
 const RepoList = ({
   notifySubscriptionChanged,
@@ -67,6 +70,20 @@ const RepoList = ({
 
     setLoading(false);
   };
+
+  const onTestClicked = async () => {
+    const settings = new Settings();
+    settings.key = "SOMETHING";
+    settings.value = "SOMETHING_VALUE";
+    const repo = new LocalStorageRepository(Tables.SETTINGS);
+
+    const mySettings = await repo.create<Settings>(settings);
+
+    const getSettings = await repo.getById<Settings>(mySettings.id);
+
+    console.debug("After get", getSettings?.value);
+    }
+  };
   return (
     <div>
       <form onSubmit={(e) => onSearchClicked(e)}>
@@ -81,6 +98,16 @@ const RepoList = ({
           type="button"
           icon="pi pi-search"
           onClick={onSearchClicked}
+          disabled={loading}
+          rounded
+        />
+
+        <Button
+          className="ml-2"
+          label="Test"
+          type="button"
+          icon="pi pi-search"
+          onClick={onTestClicked}
           disabled={loading}
           rounded
         />

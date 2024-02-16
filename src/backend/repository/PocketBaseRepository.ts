@@ -56,33 +56,19 @@ export default class PocketBaseRepository implements IRepository {
   }
 
   /** create in db */
-  async create<T>(
-    bodyParams?:
-      | {
-          [key: string]: any;
-        }
-      | FormData,
-    options?: RecordOptions
-  ): Promise<T> {
-    return await this.db.create<T>(
-      { ...bodyParams, user: this.getUserId() },
-      options
-    );
+  async create<T>(payload: T): Promise<T> {
+    return await this.db.create<T>({ ...payload, user: this.getUserId() });
   }
 
   /** update in db */
   async update<T>(
     id: string,
-    bodyParams?:
-      | {
-          [key: string]: any;
-        }
-      | FormData,
+    payload?: T,
     options?: RecordOptions
   ): Promise<T> {
     return await this.db.update<T>(
       id,
-      { ...bodyParams, user: this.getUserId() },
+      { ...payload, user: this.getUserId() },
       options
     );
   }

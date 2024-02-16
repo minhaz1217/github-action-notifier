@@ -23,25 +23,10 @@ export interface IRepository {
   getById<T>(id: string): Promise<T | null>;
 
   /** create in db */
-  create<T>(
-    bodyParams?:
-      | {
-          [key: string]: any;
-        }
-      | FormData,
-    options?: RecordOptions
-  ): Promise<T>;
+  create<T>(payload: T): Promise<T>;
 
   /** updates item */
-  update<T>(
-    id: string,
-    bodyParams?:
-      | {
-          [key: string]: any;
-        }
-      | FormData,
-    options?: RecordOptions
-  ): Promise<T>;
+  update<T>(id: string, payload?: T, options?: RecordOptions): Promise<T>;
 
   /** deletes form db */
   delete(id: string): Promise<boolean>;
