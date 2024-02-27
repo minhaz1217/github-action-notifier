@@ -18,6 +18,9 @@ export class LocalStorageRepository implements IRepository {
     this.dbName = dbName;
     this.localStorageService = new LocalStorageService();
   }
+  getByKeys<T>(keys: string[]): Promise<T[]> {
+    throw new Error("Method not implemented.");
+  }
   getList<T>(
     pageIndex: number,
     pageSize: number,
@@ -93,7 +96,7 @@ export class LocalStorageRepository implements IRepository {
     this.localStorageService.remove(this.getLocalStorageKey(id));
     return true;
   }
-  
+
   authWithPassword(
     email: string,
     password: string

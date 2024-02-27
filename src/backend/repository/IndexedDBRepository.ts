@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ListResult,
   RecordOptions,
@@ -5,29 +7,45 @@ import {
   RecordModel,
 } from "pocketbase";
 import { IRepository } from "./IRepository";
-import { initDB, useIndexedDB } from "react-indexed-db-hook";
 import Tables from "../Tables";
 import { Key } from "react-indexed-db-hook/lib/indexed-db";
+import { initDB } from "react-indexed-db";
 
 export class IndexedDBRepository implements IRepository {
   dbName: string;
-  db: {
-    add: <T = any>(value: T, key?: any) => Promise<number>;
-    getByID: <T = any>(id: number | string) => Promise<T>;
-    getAll: <T = any>() => Promise<T[]>;
-    update: <T = any>(value: T, key?: any) => Promise<any>;
-    deleteRecord: (key: Key) => Promise<any>;
-    openCursor: (
-      cursorCallback: (event: Event) => void,
-      keyRange?: IDBKeyRange
-    ) => Promise<void>;
-    getByIndex: (indexName: string, key: any) => Promise<any>;
-    clear: () => Promise<any>;
-  };
+  db: IDBObjectStore;
   constructor(dbName: string) {
     this.dbName = dbName;
+    const request = window.indexedDB.open(DBConfig.name, DBConfig.version);
+    request.onerror = (event) => {
+      console.error("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event) => {
+      this.db = event.target.result;
+    };
+
+    request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+      const db = event.target.result;
+
+      DBConfig.objectStoresMeta.forEach((objectMeta) => {
+        const store = db.createObjectStore(objectMeta.store, {
+          keyPath: objectMeta.storeConfig.keyPath,
+          autoincrement: objectMeta.storeConfig.autoIncrement,
+        });
+
+        objectMeta.storeSchema.forEach((schema) => {
+          store.createIndex(schema.name, schema.keypath, {
+            unique: schema.options.unique,
+          });
+        });
+      });
+    };
+
+    
     initDB(DBConfig);
-    this.db = useIndexedDB(this.dbName);
+  }
+  getByKeys<T>(keys: string[]): Promise<T[]> {
+    throw new Error("Method not implemented.");
   }
   getList<T>(
     pageIndex: number,
@@ -82,9 +100,9 @@ export class IndexedDBRepository implements IRepository {
   }
 }
 
-export const DBConfig = {
-  name: "Github-Action-Notifier",
-  version: 1,
+var DBConfig: IndexedDBProps = {
+  name: "Github-Action-Notifier-3",
+  version: 3,
   objectStoresMeta: [
     {
       store: Tables.SETTINGS,

@@ -27,6 +27,8 @@ export default class AllSettingsService {
         }
       )
     );
+
+    
     if (settings !== null) {
       const allSettings: AllSettings = {
         apiToken:
