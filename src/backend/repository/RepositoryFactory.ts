@@ -5,7 +5,7 @@ import PocketBaseRepository from "./PocketBaseRepository";
 export class RepositoryFactory {
   static getRepository(
     dbName: string = "",
-    repo: "POCKETBASE" | "LOCALSTORAGE" | null = null
+    repo: "POCKETBASE" | "LOCALSTORAGE" | "INDEXED_DB" | null = null
   ): IRepository {
     return new PocketBaseRepository(dbName);
     // TODO: depending on environment return repository
