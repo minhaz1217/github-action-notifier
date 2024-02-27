@@ -79,11 +79,11 @@ const RepoList = ({
     const repo = new IndexedDBRepository(Tables.SETTINGS);
 
     const mySettings = await repo.create<Settings>(settings);
-
-    const deleted = await repo.delete(settings.id);
+    console.debug("After Create", mySettings);
     const getSettings = await repo.getById<Settings>(mySettings.id);
-
-    console.debug("After get", getSettings?.value);
+    console.debug("After get", getSettings);
+    const deleted = await repo.delete(settings.id);
+    console.debug("Delete", deleted);
   };
   return (
     <div>

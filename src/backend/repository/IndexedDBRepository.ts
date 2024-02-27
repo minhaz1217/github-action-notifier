@@ -8,41 +8,21 @@ import {
 } from "pocketbase";
 import { IRepository } from "./IRepository";
 import Tables from "../Tables";
-import { Key } from "react-indexed-db-hook/lib/indexed-db";
-import { initDB } from "react-indexed-db";
+import { Database, Model } from "@n1md7/indexeddb-promise";
+import { ConfigType } from "@n1md7/indexeddb-promise/lib/types";
 
 export class IndexedDBRepository implements IRepository {
   dbName: string;
-  db: IDBObjectStore;
+  indexedDb: Database;
+  db: Model<any> | null = null;
   constructor(dbName: string) {
     this.dbName = dbName;
-    const request = window.indexedDB.open(DBConfig.name, DBConfig.version);
-    request.onerror = (event) => {
-      console.error("Why didn't you allow my web app to use IndexedDB?!");
-    };
-    request.onsuccess = (event) => {
-      this.db = event.target.result;
-    };
+    this.indexedDb = new Database(DBConfig);
+  }
 
-    request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-      const db = event.target.result;
-
-      DBConfig.objectStoresMeta.forEach((objectMeta) => {
-        const store = db.createObjectStore(objectMeta.store, {
-          keyPath: objectMeta.storeConfig.keyPath,
-          autoincrement: objectMeta.storeConfig.autoIncrement,
-        });
-
-        objectMeta.storeSchema.forEach((schema) => {
-          store.createIndex(schema.name, schema.keypath, {
-            unique: schema.options.unique,
-          });
-        });
-      });
-    };
-
-    
-    initDB(DBConfig);
+  async startConnection<T>() {
+    await this.indexedDb.connect();
+    return this.indexedDb.useModel<T>(this.dbName);
   }
   getByKeys<T>(keys: string[]): Promise<T[]> {
     throw new Error("Method not implemented.");
@@ -60,12 +40,13 @@ export class IndexedDBRepository implements IRepository {
   getFirstOne<T>(filter: string): Promise<T | null> {
     throw new Error("Method not implemented.");
   }
-  getById<T>(id: string): Promise<T | null> {
-    throw new Error("Method not implemented.");
+  async getById<T>(id: string): Promise<T | null> {
+    const db: Model<T> = await this.startConnection<T>();
+    return (await db.selectByPk(id)) as T;
   }
   async create<T>(payload: T): Promise<T> {
-    await this.db.add<T>(payload);
-    return payload;
+    const db: Model<T> = await this.startConnection<T>();
+    return (await db.insert(payload)) as T;
   }
   async update<T>(
     id: string,
@@ -75,10 +56,12 @@ export class IndexedDBRepository implements IRepository {
     if (!payload) {
       throw new Error("payload needed to update");
     }
-    return await this.db.update<T>(payload);
+    const db: Model<T> = await this.startConnection<T>();
+    return (await db.updateByPk(id)) ? true : false;
   }
-  delete(id: string): Promise<boolean> {
-    return this.db.deleteRecord(id);
+  async delete(id: string): Promise<boolean> {
+    const db: Model<any> = await this.startConnection<any>();
+    return (await db.deleteByPk(id)) ? true : false;
   }
   authWithPassword(
     email: string,
@@ -100,38 +83,70 @@ export class IndexedDBRepository implements IRepository {
   }
 }
 
-var DBConfig: IndexedDBProps = {
-  name: "Github-Action-Notifier-3",
-  version: 3,
-  objectStoresMeta: [
+const DBConfig: ConfigType = {
+  version: 1,
+  name: "github-action-notifier",
+  tables: [
     {
-      store: Tables.SETTINGS,
-      storeConfig: { keyPath: "id", autoIncrement: true },
-      storeSchema: [
-        { name: "created", keypath: "created", options: { unique: false } },
-        { name: "updated", keypath: "updated", options: { unique: false } },
-        { name: "key", keypath: "key", options: { unique: true } },
-        { name: "value", keypath: "value", options: { unique: false } },
-        { name: "user", keypath: "user", options: { unique: false } },
-      ],
+      name: Tables.SETTINGS,
+      primaryKey: {
+        name: "id",
+        autoIncrement: true,
+        unique: true,
+      },
+      indexes: {
+        created: {
+          unique: false,
+        },
+        updated: {
+          unique: false,
+        },
+        key: {
+          unique: true,
+        },
+        value: {
+          unique: false,
+        },
+        user: {
+          unique: false,
+        },
+      },
+      timestamps: true,
     },
     {
-      store: Tables.SUBSCRIPTION,
-      storeConfig: { keyPath: "id", autoIncrement: true },
-      storeSchema: [
-        { name: "created", keypath: "created", options: { unique: false } },
-        { name: "updated", keypath: "updated", options: { unique: false } },
-        { name: "name", keypath: "name", options: { unique: false } },
-        { name: "url", keypath: "url", options: { unique: true } },
-        { name: "githubId", keypath: "githubId", options: { unique: true } },
-        {
-          name: "description",
-          keypath: "description",
-          options: { unique: false },
+      name: Tables.SUBSCRIPTION,
+      primaryKey: {
+        name: "id",
+        autoIncrement: true,
+        unique: true,
+      },
+      indexes: {
+        created: {
+          unique: false,
         },
-        { name: "owner", keypath: "owner", options: { unique: false } },
-        { name: "isEnabled", keypath: "isEnabled", options: { unique: false } },
-      ],
+        updated: {
+          unique: false,
+        },
+        name: {
+          unique: false,
+        },
+        url: {
+          unique: true,
+        },
+        githubId: {
+          unique: true,
+        },
+        description: {
+          unique: false,
+        },
+        owner: {
+          unique: false,
+        },
+        isEnabled: {
+          unique: false,
+        },
+      },
+      timestamps: true,
     },
   ],
-};
+} as const;
