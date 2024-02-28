@@ -29,7 +29,11 @@ export interface IRepository {
   create<T>(payload: T): Promise<T>;
 
   /** updates item */
-  update<T>(id: string, payload?: T, options?: RecordOptions): Promise<T>;
+  update<T>(
+    id: string,
+    payload?: T,
+    options?: RecordOptions
+  ): Promise<T | undefined>;
 
   /** deletes form db */
   delete(id: string): Promise<boolean>;

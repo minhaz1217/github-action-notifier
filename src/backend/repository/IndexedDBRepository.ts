@@ -52,12 +52,12 @@ export class IndexedDBRepository implements IRepository {
     id: string,
     payload?: T | undefined,
     options?: RecordOptions | undefined
-  ): Promise<T> {
+  ): Promise<T | undefined> {
     if (!payload) {
-      throw new Error("payload needed to update");
+      throw undefined;
     }
     const db: Model<T> = await this.startConnection<T>();
-    return (await db.updateByPk(id)) ? true : false;
+    return await db.updateByPk(id, payload);
   }
   async delete(id: string): Promise<boolean> {
     const db: Model<any> = await this.startConnection<any>();
@@ -84,8 +84,8 @@ export class IndexedDBRepository implements IRepository {
 }
 
 const DBConfig: ConfigType = {
-  version: 1,
   name: "github-action-notifier",
+  version: 1,
   tables: [
     {
       name: Tables.SETTINGS,
