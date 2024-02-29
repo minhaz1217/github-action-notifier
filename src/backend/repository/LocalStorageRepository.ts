@@ -18,6 +18,21 @@ export class LocalStorageRepository implements IRepository {
     this.dbName = dbName;
     this.localStorageService = new LocalStorageService();
   }
+  getByKey<T>(key: string): Promise<T | null> {
+    throw new Error("Method not implemented.");
+  }
+  getFirstByFieldName<T>(
+    fieldName: string,
+    value: string
+  ): Promise<T | undefined> {
+    throw new Error("Method not implemented.");
+  }
+  getByFieldName<T>(
+    fieldName: string,
+    value: string
+  ): Promise<T[] | undefined> {
+    throw new Error("Method not implemented.");
+  }
   getByKeys<T>(keys: string[]): Promise<T[]> {
     throw new Error("Method not implemented.");
   }

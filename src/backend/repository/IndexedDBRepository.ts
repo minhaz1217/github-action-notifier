@@ -12,6 +12,7 @@ import { Database, Model } from "@n1md7/indexeddb-promise";
 import { ConfigType } from "@n1md7/indexeddb-promise/lib/types";
 import { Settings } from "../domain/Settings";
 import getUUID from "../utils/generateUUID";
+import LocalStorageKeys from "../LocalStorageKeys";
 
 export class IndexedDBRepository implements IRepository {
   dbName: string;
@@ -51,7 +52,7 @@ export class IndexedDBRepository implements IRepository {
   getFullList<T>(filter: string): Promise<T[]> {
     throw new Error("Method not implemented.");
   }
-  
+
   getFirstOne<T>(key: string, value: string): Promise<T | null> {
     throw new Error("Method not implemented.");
   }
@@ -104,9 +105,11 @@ export class IndexedDBRepository implements IRepository {
   token(): string | null {
     throw new Error("Method not implemented.");
   }
+
   getUserId(): string | null {
-    throw new Error("Method not implemented.");
+    return localStorage.getItem(LocalStorageKeys.USER_ID);
   }
+
   filter(raw: string, params?: { [key: string]: any } | undefined): string {
     throw new Error("Method not implemented.");
   }
