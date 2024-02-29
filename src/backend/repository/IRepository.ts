@@ -19,6 +19,15 @@ export interface IRepository {
   /** gets full list of record */
   getByKeys<T>(keys: string[]): Promise<T[]>;
 
+  /** gets a single record by key */
+  getByKey<T>(key: string): Promise<T | null>;
+  getFirstByFieldName<T>(
+    fieldName: string,
+    value: string
+  ): Promise<T | undefined>;
+
+  getByFieldName<T>(fieldName: string, value: string): Promise<T[] | undefined>;
+
   /** get first one that matches the filter, make the filter using repo.filter */
   getFirstOne<T>(filter: string): Promise<T | null>;
 

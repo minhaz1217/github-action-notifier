@@ -10,6 +10,8 @@ import { IRepository } from "./IRepository";
 import Tables from "../Tables";
 import { Database, Model } from "@n1md7/indexeddb-promise";
 import { ConfigType } from "@n1md7/indexeddb-promise/lib/types";
+import { Settings } from "../domain/Settings";
+import getUUID from "../utils/generateUUID";
 
 export class IndexedDBRepository implements IRepository {
   dbName: string;
@@ -24,9 +26,21 @@ export class IndexedDBRepository implements IRepository {
     await this.indexedDb.connect();
     return this.indexedDb.useModel<T>(this.dbName);
   }
-  getByKeys<T>(keys: string[]): Promise<T[]> {
-    throw new Error("Method not implemented.");
+
+  async getByKeys<T>(keys: string[]): Promise<T[]> {
+    const db: Model<T> = await this.startConnection<T>();
+    return (await db.select({
+      where: (data) => {
+        return data.filter((x) => keys.includes((x as { key: string }).key));
+      },
+    })) as T[];
   }
+
+  async getByKey<T>(key: string): Promise<T | null> {
+    const db: Model<T> = await this.startConnection<T>();
+    return (await db.selectByIndex("key", key)) as T;
+  }
+
   getList<T>(
     pageIndex: number,
     pageSize: number,
@@ -37,13 +51,31 @@ export class IndexedDBRepository implements IRepository {
   getFullList<T>(filter: string): Promise<T[]> {
     throw new Error("Method not implemented.");
   }
-  getFirstOne<T>(filter: string): Promise<T | null> {
+  
+  getFirstOne<T>(key: string, value: string): Promise<T | null> {
     throw new Error("Method not implemented.");
   }
   async getById<T>(id: string): Promise<T | null> {
     const db: Model<T> = await this.startConnection<T>();
     return (await db.selectByPk(id)) as T;
   }
+
+  async getFirstByFieldName<T>(
+    fieldName: string,
+    value: string
+  ): Promise<T | undefined> {
+    const db: Model<T> = await this.startConnection<T>();
+    return await db.selectByIndex(fieldName, value);
+  }
+
+  async getByFieldName<T>(
+    fieldName: string,
+    value: string
+  ): Promise<T[] | undefined> {
+    const db: Model<T> = await this.startConnection<T>();
+    return await db.selectByIndexAll(fieldName, value);
+  }
+
   async create<T>(payload: T): Promise<T> {
     const db: Model<T> = await this.startConnection<T>();
     return (await db.insert(payload)) as T;

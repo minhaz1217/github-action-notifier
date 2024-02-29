@@ -9,11 +9,8 @@ export default class SettingsRepository {
     this.repo = RepositoryFactory.getRepository(Tables.SETTINGS);
   }
   async getKey(key: string) {
-    const setting = await this.repo.getFirstOne<Settings>(
-      this.repo.filter("key={:key}", {
-        key: key,
-      })
-    );
+    const setting = await this.repo.getByKey<Settings>(key);
+
     if (setting) {
       return setting;
     }
@@ -35,13 +32,13 @@ export default class SettingsRepository {
       return await this.repo.update<Settings>(setting.id, {
         key: key,
         value: value,
-      });
+      } as Settings);
     }
     // insert operation
     return await this.repo.create<Settings>({
       key: key,
       value: value,
-    });
+    } as Settings);
   }
 
   async removeKey(key: string) {

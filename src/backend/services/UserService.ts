@@ -9,7 +9,10 @@ export default class UserService {
   private _userRepo: IRepository;
   private _token: string | null = null;
   constructor() {
-    this._userRepo = RepositoryFactory.getRepository(Tables.USERS);
+    this._userRepo = RepositoryFactory.getRepository(
+      Tables.USERS,
+      "POCKETBASE"
+    );
     this._token = this._localStorage.get(LocalStorageKeys.AUTH);
   }
 

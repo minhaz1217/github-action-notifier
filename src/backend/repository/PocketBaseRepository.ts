@@ -17,6 +17,46 @@ export default class PocketBaseRepository implements IRepository {
     this._pb = pb;
     this.db = this._pb.collection(this._collectionName);
   }
+  async getByFieldName<T>(
+    fieldName: string,
+    value: string
+  ): Promise<T[] | undefined> {
+    const result = await this.getList<T>(
+      0,
+      1000000,
+      this.filter("{:fieldName}={:value}", {
+        fieldName: fieldName,
+        value: value,
+      })
+    );
+    if (result && result.items && result.items.length > 0) {
+      return result.items;
+    }
+    return undefined;
+  }
+  async getFirstByFieldName<T>(
+    fieldName: string,
+    value: string
+  ): Promise<T | undefined> {
+    return (
+      (await this.getFirstOne<T>(
+        this.filter("{:fieldName} = {:value}", {
+          fieldName: fieldName,
+          value: value,
+        })
+      )) ?? undefined
+    );
+  }
+  getByKeys<T>(keys: string[]): Promise<T[]> {
+    throw new Error("Method not implemented.");
+  }
+  async getByKey<T>(key: string): Promise<T | null> {
+    return await this.getFirstOne<T>(
+      this.filter("key={:key}", {
+        key: key,
+      })
+    );
+  }
 
   /** gets list of items by page index, page size and filter, make the filter using repo.filter */
   async getList<T>(

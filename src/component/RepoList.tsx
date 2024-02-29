@@ -73,17 +73,22 @@ const RepoList = ({
   };
 
   const onTestClicked = async () => {
-    const settings = new Settings();
-    settings.key = "SOMETHING";
-    settings.value = "SOMETHING_VALUE";
     const repo = new IndexedDBRepository(Tables.SETTINGS);
+    console.debug(await repo.getByKeys(["SOMETHING", "SOMETHING2"]));
+    // const settings = new Settings();
+    // settings.key = "SOMETHING";
+    // settings.value = "SOMETHING_VALUE";
 
-    const mySettings = await repo.create<Settings>(settings);
-    console.debug("After Create", mySettings);
-    const getSettings = await repo.getById<Settings>(mySettings.id);
-    console.debug("After get", getSettings);
-    const deleted = await repo.delete(settings.id);
-    console.debug("Delete", deleted);
+    // await repo.create<Settings>(settings);
+
+    try {
+      const settings2 = new Settings();
+      settings2.key = "SOMETHING2";
+      settings2.value = "SOMETHING_VALUE";
+      await repo.create<Settings>(settings2);
+    } catch (e: any) {
+      console.debug("ERROR", e);
+    }
   };
   return (
     <div>

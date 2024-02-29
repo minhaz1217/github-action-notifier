@@ -12,22 +12,29 @@ export default class SubscriptionService {
   }
 
   getByName = async (name: string) => {
-    const subscription = await this.subscriptionRepo.getFirstOne<Subscription>(
-      this.subscriptionRepo.filter("name = {:key}", {
-        key: name,
-      })
-    );
+    // const subscription = await this.subscriptionRepo.getFirstOne<Subscription>(
+    //   this.subscriptionRepo.filter("name = {:key}", {
+    //     key: name,
+    //   })
+    // );
+
+    const subscription =
+      await this.subscriptionRepo.getFirstByFieldName<Subscription>(
+        "name",
+        name
+      );
     return subscription;
   };
 
   getList = async () => {
-    return await this.subscriptionRepo.getList<Subscription>(
-      0,
-      1000000,
-      this.subscriptionRepo.filter("isEnabled={:isEnabled}", {
-        isEnabled: true,
-      })
-    );
+    // return await this.subscriptionRepo.getList<Subscription>(
+    //   0,
+    //   1000000,
+    //   this.subscriptionRepo.filter("isEnabled={:isEnabled}", {
+    //     isEnabled: true,
+    //   })
+    // );
+    return this.subscriptionRepo.getByFieldName("isEnabled", "true");
   };
 
   create = async (payload: Subscription) => {

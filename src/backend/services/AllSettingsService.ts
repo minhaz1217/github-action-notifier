@@ -17,18 +17,22 @@ export default class AllSettingsService {
     this.settingRepo = new SettingsRepository();
   }
   async get() {
-    const settings = await this.repo.getFullList<Settings>(
-      this.repo.filter(
-        "key={:tokenKey}||key={:webhookKey}||key={:intervalKey}",
-        {
-          tokenKey: this.TOKEN_KEY,
-          webhookKey: this.DISCORD_WEBHOOK_URL_KEY,
-          intervalKey: this.CHECKING_INTERVAL_KEY,
-        }
-      )
-    );
+    const settings = await this.repo.getByKeys<Settings>([
+      this.TOKEN_KEY,
+      this.DISCORD_WEBHOOK_URL_KEY,
+      this.CHECKING_INTERVAL_KEY,
+    ]);
+    // const settings = await this.repo.getFullList<Settings>(
+    //   this.repo.filter(
+    //     "key={:tokenKey}||key={:webhookKey}||key={:intervalKey}",
+    //     {
+    //       tokenKey: this.TOKEN_KEY,
+    //       webhookKey: this.DISCORD_WEBHOOK_URL_KEY,
+    //       intervalKey: this.CHECKING_INTERVAL_KEY,
+    //     }
+    //   )
+    // );
 
-    
     if (settings !== null) {
       const allSettings: AllSettings = {
         apiToken:
