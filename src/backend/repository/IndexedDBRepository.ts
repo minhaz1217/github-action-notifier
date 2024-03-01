@@ -74,7 +74,9 @@ export class IndexedDBRepository implements IRepository {
     value: string
   ): Promise<T[] | undefined> {
     const db: Model<T> = await this.startConnection<T>();
-    return await db.selectByIndexAll(fieldName, value);
+    const result = await db.selectByIndexAll(fieldName, value);
+    console.debug("Field", fieldName, value);
+    return result;
   }
 
   async create<T>(payload: T): Promise<T> {

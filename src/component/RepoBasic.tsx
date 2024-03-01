@@ -20,8 +20,8 @@ const RepoBasic = ({
         <div className="flex items-center mb-2">
           <span className="mr-2">Enabled: </span>
           <InputSwitch
-            title={repo.isEnabled ? "Disable" : "Enable"}
-            checked={repo.isEnabled}
+            title={repo.isEnabled === "TRUE" ? "Disable" : "Enable"}
+            checked={repo.isEnabled === "TRUE"}
             onChange={(e) => onIsEnabledChanged(repo.id, e.value)}
           />
         </div>

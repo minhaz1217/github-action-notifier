@@ -1,3 +1,5 @@
+import { StringBoolean } from "../domain/StringBoolean";
+
 export interface RepoModel {
   id: string;
   name: string;
@@ -8,5 +10,5 @@ export interface RepoModel {
     id: string;
     login: string;
   };
-  isEnabled: boolean;
+  isEnabled: StringBoolean;
 }

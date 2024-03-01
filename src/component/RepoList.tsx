@@ -61,11 +61,11 @@ const RepoList = ({
       url: repoDetails.html_url,
       description: repoDetails.description,
       owner: repoDetails?.owner?.login ?? "",
-      isEnabled: true,
+      isEnabled: "TRUE",
     } as Subscription;
 
     const createdSuccessfully = await subscriptionService.create(payload);
-    if (createdSuccessfully !== null) {
+    if (createdSuccessfully) {
       notifySubscriptionChanged.notifyAll();
     }
 
@@ -73,8 +73,8 @@ const RepoList = ({
   };
 
   const onTestClicked = async () => {
-    const repo = new IndexedDBRepository(Tables.SETTINGS);
-    console.debug(await repo.getByKeys(["SOMETHING", "SOMETHING2"]));
+    const repo = new IndexedDBRepository(Tables.SUBSCRIPTION);
+    await repo.getByFieldName<Subscription>("qwe", "");
     // const settings = new Settings();
     // settings.key = "SOMETHING";
     // settings.value = "SOMETHING_VALUE";

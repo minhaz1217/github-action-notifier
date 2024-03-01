@@ -27,19 +27,15 @@ export default class SubscriptionService {
   };
 
   getList = async () => {
-    // return await this.subscriptionRepo.getList<Subscription>(
-    //   0,
-    //   1000000,
-    //   this.subscriptionRepo.filter("isEnabled={:isEnabled}", {
-    //     isEnabled: true,
-    //   })
-    // );
-    return this.subscriptionRepo.getByFieldName<Subscription>("isEnabled", "true");
+    return this.subscriptionRepo.getByFieldName<Subscription>(
+      "isEnabled",
+      "TRUE"
+    );
   };
 
   create = async (payload: Subscription) => {
     const alreadyExists = await this.getByName(payload.name);
-    if (alreadyExists === null) {
+    if (!alreadyExists) {
       return await this.subscriptionRepo.create<Subscription>(payload);
     }
     return null;
@@ -48,7 +44,7 @@ export default class SubscriptionService {
   changeIsEnabled = async (id: string, isEnabled: boolean) => {
     const subscription = await this.subscriptionRepo.getById<Subscription>(id);
     if (subscription !== null) {
-      subscription.isEnabled = isEnabled;
+      subscription.isEnabled = isEnabled === true ? "TRUE" : "FALSE";
       return await this.subscriptionRepo.update(subscription.id, subscription);
     }
     return null;

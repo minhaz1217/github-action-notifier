@@ -27,8 +27,9 @@ const SubscriptionList = ({
   const getSubscriptionList = async () => {
     setLoading(true);
     const list = await subscriptionService.getList();
+    console.debug("List", list);
     setLoading(false);
-    setRepoList(list?.items ?? []);
+    setRepoList(list ?? []);
   };
 
   const onUnSubscribeClicked = async (repo: Subscription) => {
@@ -45,7 +46,7 @@ const SubscriptionList = ({
     if (updated) {
       repoList.forEach((x) => {
         if (x.id === id) {
-          x.isEnabled = isEnabled;
+          x.isEnabled = isEnabled === true ? "TRUE" : "FALSE";
         }
       });
       setRepoList([...repoList]);

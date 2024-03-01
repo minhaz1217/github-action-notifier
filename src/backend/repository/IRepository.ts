@@ -26,7 +26,10 @@ export interface IRepository {
     value: string
   ): Promise<T | undefined>;
 
-  getByFieldName<T>(fieldName: string, value: string): Promise<T[] | undefined>;
+  getByFieldName<T>(
+    fieldName: string,
+    value: string | boolean
+  ): Promise<T[] | undefined>;
 
   /** get first one that matches the filter, make the filter using repo.filter */
   getFirstOne<T>(filter: string): Promise<T | null>;
