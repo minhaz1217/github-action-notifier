@@ -69,12 +69,10 @@ class SubscriptionActionCheck {
   async checkSubscriptionList() {
     const list = await this.subscriptionService.getList();
     console.debug(
-      `${new Date().toISOString()} Checking Subscription for ${
-        list.items.length
-      }`
+      `${new Date().toISOString()} Checking Subscription for ${list?.length}`
     );
-    if (list.items.length > 0) {
-      list.items.forEach((item) => this.checkAction(item));
+    if (list && list?.length > 0) {
+      list.forEach((item) => this.checkAction(item));
     }
   }
 
