@@ -27,7 +27,6 @@ const SubscriptionList = ({
   const getSubscriptionList = async () => {
     setLoading(true);
     const list = await subscriptionService.getList();
-    console.debug("List", list);
     setLoading(false);
     setRepoList(list ?? []);
   };

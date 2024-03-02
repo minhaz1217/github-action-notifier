@@ -42,7 +42,6 @@ export default function Login() {
         formData.password,
         formData.confirmPassword
       )) as any;
-      console.debug("Created User", createdUser);
       if (createdUser?.id) {
         // TODO: show success toast message
         push("/login");

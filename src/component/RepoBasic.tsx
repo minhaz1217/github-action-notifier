@@ -12,11 +12,11 @@ const RepoBasic = ({
   repo: RepoModel;
   isSubscribed: boolean;
   buttonClicked: Function;
-  onIsEnabledChanged: Function;
+  onIsEnabledChanged?: Function;
 }) => {
   return (
     <Card title={repo.name} subTitle={repo.description} className="mt-2">
-      {isSubscribed && (
+      {isSubscribed && onIsEnabledChanged && (
         <div className="flex items-center mb-2">
           <span className="mr-2">Enabled: </span>
           <InputSwitch

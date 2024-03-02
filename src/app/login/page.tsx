@@ -39,7 +39,6 @@ export default function Login() {
         formData.email,
         formData.password
       );
-      // console.debug("Logged in User Token", userService.token());
 
       if (loggedInUser?.record?.id) {
         if (toast) {

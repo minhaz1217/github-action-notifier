@@ -19,7 +19,6 @@ class SubscriptionActionCheck {
   private _checkingInterval: number = 30;
   private constructor(discordUrl: string, checkingInterval: number) {
     this._checkingInterval = checkingInterval;
-    console.debug("Constructor called");
     this.subscriptionService = new SubscriptionService();
     this.githubTokenService = new GithubTokenService();
 
@@ -27,7 +26,6 @@ class SubscriptionActionCheck {
   }
   static async init() {
     if (typeof window === "undefined") {
-      console.debug("Init Called");
     } else {
       if (called === false && subscriptionActionCheck === null) {
         called = true;
@@ -39,7 +37,7 @@ class SubscriptionActionCheck {
             discordUrl,
             intervalTime
           );
-          console.debug("Is in client", subscriptionActionCheck.intervalId);
+          // console.debug("Is in client", subscriptionActionCheck.intervalId);
           await subscriptionActionCheck?.registerInterval();
         }
       }
@@ -68,15 +66,29 @@ class SubscriptionActionCheck {
 
   async checkSubscriptionList() {
     const list = await this.subscriptionService.getList();
-    console.debug(
-      `${new Date().toISOString()} Checking Subscription for ${list?.length}`
-    );
     if (list && list?.length > 0) {
-      list.forEach((item) => {
-        if (item.isEnabled === "TRUE") {
+      const onlyEnabled = list?.filter((x) => x.isEnabled === "TRUE");
+
+      if (onlyEnabled.length === 0) {
+        console.info(
+          `${new Date().toISOString()} Checking Subscription -> 0 out of ${
+            list.length
+          } repos enabled`
+        );
+      } else {
+        console.info(
+          `${new Date().toISOString()} Checking Subscription -> for ${
+            onlyEnabled?.length
+          }`
+        );
+        onlyEnabled.forEach((item) => {
           this.checkAction(item);
-        }
-      });
+        });
+      }
+    } else {
+      console.info(
+        `${new Date().toISOString()} Checking Subscription -> no repos to check`
+      );
     }
   }
 
@@ -92,7 +104,7 @@ class SubscriptionActionCheck {
         headers: OctoKitService.header,
       } as any)
     ).data as any as WorkflowRunList;
-    console.debug("Workflow run", workFlowRun);
+    // console.debug("Workflow run", workFlowRun);
     workFlowRun.workflow_runs.forEach((run) => {
       if (run === null) {
         return;

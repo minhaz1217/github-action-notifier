@@ -52,7 +52,6 @@ export default function SettingModal() {
       checkingInterval: Number(formData.checkingInterval),
       discordWebHookUrl: formData.discordWebHookUrl.trim(),
     });
-    console.debug("Item", await allSettingsService.get());
     setLoading(false);
     setVisible(false);
   };

@@ -9,7 +9,6 @@ export default class Discord {
     this._webHookUrl = webHookUrl;
   }
   async send(workflowRun: WorkflowRun) {
-    // console.debug("Send Message", workflowRun);
     const payload: DiscordPayload = {
       username: this.displayName,
       content: `${workflowRun?.repository?.name} ${workflowRun?.head_commit?.message} -> ${workflowRun?.status}`,

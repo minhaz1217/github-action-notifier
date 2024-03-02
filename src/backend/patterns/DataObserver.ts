@@ -9,7 +9,6 @@ export default class DataObserver implements INotifier, IObservable {
   }
 
   notifyAll() {
-    // console.debug("Notifying all");
     this.observers.forEach((x) => x.notify());
   }
 }
