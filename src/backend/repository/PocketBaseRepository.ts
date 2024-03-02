@@ -1,5 +1,4 @@
 import {
-  ListResult,
   RecordAuthResponse,
   RecordModel,
   RecordOptions,
@@ -70,15 +69,8 @@ export default class PocketBaseRepository implements IRepository {
     return result && result.items.length > 0 ? result.items : [];
   }
 
-  /** gets full list of record */
-  getFullList<T>(filter: string): Promise<T[]> {
-    return this.db.getFullList<T>({
-      filter: filter,
-    });
-  }
-
   /** get first one that matches the filter, make the filter using repo.filter */
-  async getFirstOne<T>(filter: string): Promise<T | null> {
+  private async getFirstOne<T>(filter: string): Promise<T | null> {
     try {
       return await this.db.getFirstListItem<T>(filter);
     } catch (ex: any) {
@@ -127,14 +119,6 @@ export default class PocketBaseRepository implements IRepository {
     return await this.db.authWithPassword(email, password);
   }
 
-  /** get token from pb authstore */
-  token(): string | null {
-    if (this._pb?.authStore?.token) {
-      return this._pb?.authStore?.token as string;
-    }
-    return null;
-  }
-
   /** gets user id from pb authstore model */
   getUserId(): string | null {
     if (this._pb?.authStore?.model?.id) {
@@ -144,7 +128,7 @@ export default class PocketBaseRepository implements IRepository {
   }
 
   /** Adapter for pb.filter */
-  filter(raw: string, params?: { [key: string]: any }): string {
+  private filter(raw: string, params?: { [key: string]: any }): string {
     return this._pb.filter(raw, params);
   }
 

@@ -1,17 +1,10 @@
 "use client";
 
-import {
-  ListResult,
-  RecordOptions,
-  RecordAuthResponse,
-  RecordModel,
-} from "pocketbase";
+import { RecordOptions, RecordAuthResponse, RecordModel } from "pocketbase";
 import { IRepository } from "./IRepository";
 import Tables from "../Tables";
 import { Database, Model } from "@n1md7/indexeddb-promise";
 import { ConfigType } from "@n1md7/indexeddb-promise/lib/types";
-import { Settings } from "../domain/Settings";
-import getUUID from "../utils/generateUUID";
 import LocalStorageKeys from "../LocalStorageKeys";
 
 export class IndexedDBRepository implements IRepository {
@@ -26,10 +19,6 @@ export class IndexedDBRepository implements IRepository {
   async startConnection<T>() {
     await this.indexedDb.connect();
     return this.indexedDb.useModel<T>(this.dbName);
-  }
-  /** get first one that matches the filter, make the filter using repo.filter */
-  getFirstOne<T>(filter: string): Promise<T | null> {
-    throw new Error("Method not implemented.");
   }
 
   async getByKeys<T>(keys: string[]): Promise<T[]> {
@@ -53,9 +42,6 @@ export class IndexedDBRepository implements IRepository {
   ): Promise<T[] | undefined> {
     const db: Model<T> = await this.startConnection<T>();
     return await db.selectAll();
-  }
-  getFullList<T>(filter: string): Promise<T[]> {
-    throw new Error("Method not implemented.");
   }
 
   async getById<T>(id: string): Promise<T | null> {
@@ -85,6 +71,7 @@ export class IndexedDBRepository implements IRepository {
     const db: Model<T> = await this.startConnection<T>();
     return (await db.insert(payload)) as T;
   }
+
   async update<T>(
     id: string,
     payload?: T | undefined,
@@ -96,17 +83,16 @@ export class IndexedDBRepository implements IRepository {
     const db: Model<T> = await this.startConnection<T>();
     return await db.updateByPk(id, payload);
   }
+
   async delete(id: string): Promise<boolean> {
     const db: Model<any> = await this.startConnection<any>();
     return (await db.deleteByPk(id)) ? true : false;
   }
+
   authWithPassword(
     email: string,
     password: string
   ): Promise<RecordAuthResponse<RecordModel>> {
-    throw new Error("Method not implemented.");
-  }
-  token(): string | null {
     throw new Error("Method not implemented.");
   }
 
@@ -114,9 +100,6 @@ export class IndexedDBRepository implements IRepository {
     return localStorage.getItem(LocalStorageKeys.USER_ID);
   }
 
-  filter(raw: string, params?: { [key: string]: any } | undefined): string {
-    throw new Error("Method not implemented.");
-  }
   clear(): void {
     throw new Error("Method not implemented.");
   }
