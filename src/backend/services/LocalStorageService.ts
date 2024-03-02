@@ -1,4 +1,5 @@
 "use client";
+
 export default class LocalStorageService {
   get(key: string) {
     return localStorage.getItem(key);

@@ -8,10 +8,10 @@ import {
 export interface IRepository {
   /** gets list of items by page index, page size and filter, make the filter using repo.filter */
   getList<T>(
-    pageIndex: number,
-    pageSize: number,
-    filter: string
-  ): Promise<ListResult<T>>;
+    pageIndex?: number,
+    pageSize?: number,
+    filter?: string
+  ): Promise<T[] | undefined>;
 
   /** gets full list of record */
   getFullList<T>(filter: string): Promise<T[]>;

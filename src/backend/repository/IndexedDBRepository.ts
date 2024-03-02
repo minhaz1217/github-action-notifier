@@ -27,6 +27,10 @@ export class IndexedDBRepository implements IRepository {
     await this.indexedDb.connect();
     return this.indexedDb.useModel<T>(this.dbName);
   }
+  /** get first one that matches the filter, make the filter using repo.filter */
+  getFirstOne<T>(filter: string): Promise<T | null> {
+    throw new Error("Method not implemented.");
+  }
 
   async getByKeys<T>(keys: string[]): Promise<T[]> {
     const db: Model<T> = await this.startConnection<T>();
@@ -42,20 +46,18 @@ export class IndexedDBRepository implements IRepository {
     return (await db.selectByIndex("key", key)) as T;
   }
 
-  getList<T>(
-    pageIndex: number,
-    pageSize: number,
-    filter: string
-  ): Promise<ListResult<T>> {
-    throw new Error("Method not implemented.");
+  async getList<T>(
+    pageIndex: number = 0,
+    pageSize: number = 10000,
+    filter: string = ""
+  ): Promise<T[] | undefined> {
+    const db: Model<T> = await this.startConnection<T>();
+    return await db.selectAll();
   }
   getFullList<T>(filter: string): Promise<T[]> {
     throw new Error("Method not implemented.");
   }
 
-  getFirstOne<T>(key: string, value: string): Promise<T | null> {
-    throw new Error("Method not implemented.");
-  }
   async getById<T>(id: string): Promise<T | null> {
     const db: Model<T> = await this.startConnection<T>();
     return (await db.selectByPk(id)) as T;

@@ -27,10 +27,7 @@ export default class SubscriptionService {
   };
 
   getList = async () => {
-    return this.subscriptionRepo.getByFieldName<Subscription>(
-      "isEnabled",
-      "TRUE"
-    );
+    return this.subscriptionRepo.getList<Subscription>();
   };
 
   create = async (payload: Subscription) => {

@@ -1,4 +1,5 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import DataObserver from "../../backend/patterns/DataObserver";
 import UserService from "../../backend/services/UserService";

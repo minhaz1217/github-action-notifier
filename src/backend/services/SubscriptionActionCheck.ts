@@ -72,7 +72,11 @@ class SubscriptionActionCheck {
       `${new Date().toISOString()} Checking Subscription for ${list?.length}`
     );
     if (list && list?.length > 0) {
-      list.forEach((item) => this.checkAction(item));
+      list.forEach((item) => {
+        if (item.isEnabled === "TRUE") {
+          this.checkAction(item);
+        }
+      });
     }
   }
 

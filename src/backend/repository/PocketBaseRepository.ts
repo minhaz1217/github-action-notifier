@@ -29,8 +29,8 @@ export default class PocketBaseRepository implements IRepository {
         value: value,
       })
     );
-    if (result && result.items && result.items.length > 0) {
-      return result.items;
+    if (result && result.length > 0) {
+      return result;
     }
     return undefined;
   }
@@ -63,10 +63,11 @@ export default class PocketBaseRepository implements IRepository {
     pageIndex: number,
     pageSize: number,
     filter: string
-  ): Promise<ListResult<T>> {
-    return await this.db.getList<T>(pageIndex, pageSize, {
+  ): Promise<T[] | undefined> {
+    const result = await this.db.getList<T>(pageIndex, pageSize, {
       filter: filter,
     });
+    return result && result.items.length > 0 ? result.items : [];
   }
 
   /** gets full list of record */
