@@ -8,6 +8,7 @@ export default class AllSettingsService {
   private readonly TOKEN_KEY = "API_KEY" as const;
   private readonly DISCORD_WEBHOOK_URL_KEY = "DISCORD_WEBHOOK_URL_KEY" as const;
   private readonly CHECKING_INTERVAL_KEY = "CHECKING_INTERVAL_KEY" as const;
+  private readonly GITHUB_API_KEY_KEY = "API_KEY" as const;
 
   private readonly repo: IRepository;
   private readonly settingRepo: SettingsRepository;
@@ -82,6 +83,14 @@ export default class AllSettingsService {
     return true;
   }
 
+  async getGithubToken() {
+    const githubToken = await this.settingRepo.getKey(this.GITHUB_API_KEY_KEY);
+    if (githubToken) {
+      return githubToken.value;
+    }
+    return "";
+  }
+  
   async getDiscordUrl() {
     const discordUrl = await this.settingRepo.getKey(
       this.DISCORD_WEBHOOK_URL_KEY

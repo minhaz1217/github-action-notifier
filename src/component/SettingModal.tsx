@@ -1,13 +1,16 @@
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AllSettingsService from "../backend/services/AllSettingsService";
+import { SettingsObserverContext } from "./contexts/contexts";
 
 export default function SettingModal() {
   const [visible, setVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<SettingForm>(new SettingForm());
+  const settingsContext = useContext(SettingsObserverContext);
+
 
   const allSettingsService = new AllSettingsService();
   useEffect(() => {
@@ -52,6 +55,7 @@ export default function SettingModal() {
       checkingInterval: Number(formData.checkingInterval),
       discordWebHookUrl: formData.discordWebHookUrl.trim(),
     });
+    settingsContext.notifyAll();
     setLoading(false);
     setVisible(false);
   };

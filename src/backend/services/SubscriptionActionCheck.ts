@@ -1,17 +1,17 @@
 import { Octokit } from "@octokit/rest";
 import { Subscription } from "../domain/Subscription";
-import GithubTokenService from "./GithubTokenService";
 import SubscriptionService from "./SubscriptionService";
 import OctoKitService from "./OctoKitService";
 import Discord from "../notification-providers/Discord";
 import AllSettingsService from "./AllSettingsService";
+import DataObserver, { NotifierBuilder } from "../patterns/DataObserver";
 
 let subscriptionActionCheck: SubscriptionActionCheck | null = null;
 let called: boolean = false;
 
 class SubscriptionActionCheck {
   subscriptionService: SubscriptionService;
-  githubTokenService: GithubTokenService;
+  allSettingsService: AllSettingsService;
   private intervalId: any | null = null;
   private octokit: Octokit | null = null;
   private inProgressList: Set<number> = new Set();
@@ -20,14 +20,15 @@ class SubscriptionActionCheck {
   private constructor(discordUrl: string, checkingInterval: number) {
     this._checkingInterval = checkingInterval;
     this.subscriptionService = new SubscriptionService();
-    this.githubTokenService = new GithubTokenService();
+    this.allSettingsService = new AllSettingsService();
 
     this.discord = new Discord(discordUrl);
   }
-  static async init() {
+  static async init(settingObserver: DataObserver) {
     if (typeof window === "undefined") {
     } else {
       if (called === false && subscriptionActionCheck === null) {
+        settingObserver.subscribe(new NotifierBuilder(() => {}));
         called = true;
         const settingService = new AllSettingsService();
         const discordUrl = await settingService.getDiscordUrl();
@@ -45,17 +46,28 @@ class SubscriptionActionCheck {
     return subscriptionActionCheck;
   }
 
+  static async setupSubscription(discordUrl: string, intervalTime: number) {
+    if (discordUrl) {
+      subscriptionActionCheck = new SubscriptionActionCheck(
+        discordUrl,
+        intervalTime
+      );
+      // console.debug("Is in client", subscriptionActionCheck.intervalId);
+      await subscriptionActionCheck?.registerInterval();
+    }
+  }
+
   async registerInterval() {
     if (this.intervalId !== null) {
       clearInterval(this.intervalId);
     }
 
     this.inProgressList.clear();
-    const githubToken = await this.githubTokenService.get();
-    if (githubToken === null || githubToken?.key?.trim() === "") {
+    const githubToken = await this.allSettingsService.getGithubToken();
+    if (githubToken === null || githubToken?.trim() === "") {
       throw Error("Github token not found");
     }
-    this.octokit = new OctoKitService(githubToken.value).get();
+    this.octokit = new OctoKitService(githubToken).get();
 
     this.checkSubscriptionList();
 
@@ -157,6 +169,8 @@ export interface WorkflowRun {
     name: string;
   };
 }
-export default async function registerSubscriptionAction() {
-  const interval = await SubscriptionActionCheck.init();
+export default async function registerSubscriptionAction(
+  settingObserver: DataObserver
+) {
+  const interval = await SubscriptionActionCheck.init(settingObserver);
 }

@@ -1,6 +1,5 @@
 "use client";
 import { FormEvent, useContext, useEffect, useState } from "react";
-import GithubTokenService from "../backend/services/GithubTokenService";
 import { Button } from "primereact/button";
 import { Octokit } from "@octokit/rest";
 import { InputText } from "primereact/inputtext";
@@ -14,13 +13,13 @@ import { Settings } from "../backend/domain/Settings";
 import Tables from "../backend/Tables";
 import { IndexedDBRepository } from "../backend/repository/IndexedDBRepository";
 import { SubscriptionObserverContext } from "./contexts/contexts";
+import AllSettingsService from "@/backend/services/AllSettingsService";
 
 const RepoList = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [repoSearchText, setRepoSearchText] = useState<string>("");
   const [searchResult, setSearchResult] = useState<any[] | null>(null);
-  const githubApiKeyService: GithubTokenService = new GithubTokenService();
   const subscriptionChanged = useContext(SubscriptionObserverContext);
   useEffect(() => {
     checkApiKey();
@@ -28,9 +27,10 @@ const RepoList = () => {
 
   const checkApiKey = async () => {
     setLoading(true);
-    const token = await githubApiKeyService.get();
-    if (token && apiKey !== token.value) {
-      setApiKey(token.value);
+    const allSettingsService = new AllSettingsService();
+    const token = await allSettingsService.getGithubToken();
+    if (token && apiKey !== token) {
+      setApiKey(token);
     }
     setLoading(false);
   };
