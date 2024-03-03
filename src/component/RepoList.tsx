@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import GithubTokenService from "../backend/services/GithubTokenService";
 import { Button } from "primereact/button";
 import { Octokit } from "@octokit/rest";
@@ -13,17 +13,15 @@ import SubscriptionService from "../backend/services/SubscriptionService";
 import { Settings } from "../backend/domain/Settings";
 import Tables from "../backend/Tables";
 import { IndexedDBRepository } from "../backend/repository/IndexedDBRepository";
+import { SubscriptionObserverContext } from "./contexts/contexts";
 
-const RepoList = ({
-  notifySubscriptionChanged,
-}: {
-  notifySubscriptionChanged: INotifier;
-}) => {
+const RepoList = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [repoSearchText, setRepoSearchText] = useState<string>("");
   const [searchResult, setSearchResult] = useState<any[] | null>(null);
   const githubApiKeyService: GithubTokenService = new GithubTokenService();
+  const subscriptionChanged = useContext(SubscriptionObserverContext);
   useEffect(() => {
     checkApiKey();
   }, [apiKey]);
@@ -65,7 +63,7 @@ const RepoList = ({
 
     const createdSuccessfully = await subscriptionService.create(payload);
     if (createdSuccessfully) {
-      notifySubscriptionChanged.notifyAll();
+      subscriptionChanged.notifyAll();
     }
 
     setLoading(false);

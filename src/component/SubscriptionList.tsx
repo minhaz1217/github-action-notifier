@@ -1,22 +1,19 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SubscriptionService from "../backend/services/SubscriptionService";
 import { Subscription } from "../backend/domain/Subscription";
 import RepoBasic from "./RepoBasic";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { IObservable, NotifierBuilder } from "../backend/patterns/DataObserver";
+import { SubscriptionObserverContext } from "./contexts/contexts";
 
-const SubscriptionList = ({
-  updateOnSubscriptionChanged,
-}: {
-  updateOnSubscriptionChanged: IObservable;
-}) => {
+const SubscriptionList = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [repoList, setRepoList] = useState<Subscription[]>([]);
   const subscriptionService = new SubscriptionService();
-
+  const subscriptionChanged = useContext(SubscriptionObserverContext);
   useEffect(() => {
-    updateOnSubscriptionChanged.subscribe(
+    subscriptionChanged.subscribe(
       new NotifierBuilder(async () => {
         await getSubscriptionList();
       })
