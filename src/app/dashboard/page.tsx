@@ -11,11 +11,11 @@ import React from "react";
 import {
   SettingsObserverContext,
   SubscriptionObserverContext,
+  settingsChanged$,
 } from "@/component/contexts/contexts";
 
 const Dashboard = () => {
   const newSubscriptionAdded$ = new DataObserver();
-  const settingsChanged$ = new DataObserver();
 
   const userService = new UserService();
   const { push } = useRouter();

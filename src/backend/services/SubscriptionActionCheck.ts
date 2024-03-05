@@ -24,30 +24,36 @@ class SubscriptionActionCheck {
 
     this.discord = new Discord(discordUrl);
   }
+
+  setSettings(discordUrl: string, checkingInterval: number) {
+    this.discord = new Discord(discordUrl);
+    this._checkingInterval = checkingInterval;
+  }
+
   static async init(settingObserver: DataObserver) {
     if (typeof window === "undefined") {
     } else {
       if (called === false && subscriptionActionCheck === null) {
-        settingObserver.subscribe(new NotifierBuilder(() => {}));
+        settingObserver.subscribe(
+          new NotifierBuilder(async () => {
+            await this.setupSubscription();
+          })
+        );
         called = true;
-        const settingService = new AllSettingsService();
-        const discordUrl = await settingService.getDiscordUrl();
-        const intervalTime = await settingService.getCheckingInterval();
-        if (discordUrl) {
-          subscriptionActionCheck = new SubscriptionActionCheck(
-            discordUrl,
-            intervalTime
-          );
-          // console.debug("Is in client", subscriptionActionCheck.intervalId);
-          await subscriptionActionCheck?.registerInterval();
-        }
+        this.setupSubscription();
       }
     }
     return subscriptionActionCheck;
   }
 
-  static async setupSubscription(discordUrl: string, intervalTime: number) {
+  static async setupSubscription() {
+    const settingService = new AllSettingsService();
+    const discordUrl = await settingService.getDiscordUrl();
+    const intervalTime = await settingService.getCheckingInterval();
     if (discordUrl) {
+      if (subscriptionActionCheck) {
+        clearInterval(subscriptionActionCheck.intervalId);
+      }
       subscriptionActionCheck = new SubscriptionActionCheck(
         discordUrl,
         intervalTime
