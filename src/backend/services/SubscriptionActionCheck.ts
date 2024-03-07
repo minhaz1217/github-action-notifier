@@ -115,33 +115,35 @@ class SubscriptionActionCheck {
       return;
     }
 
-    const workFlowRun = (
-      await this.octokit.actions.getWorkflowRun({
-        owner: subscription.owner,
-        repo: subscription.name,
-        headers: OctoKitService.header,
-      } as any)
-    ).data as any as WorkflowRunList;
-    // console.debug("Workflow run", workFlowRun);
-    workFlowRun.workflow_runs.forEach((run) => {
-      if (run === null) {
-        return;
-      }
-      if (run.status === "in_progress") {
-        if (this.inProgressList.has(run.id) === false) {
-          // notifying when first time the run is found.
-          this.sendNotification(run);
+    try {
+      const workFlowRun = (
+        await this.octokit.actions.getWorkflowRun({
+          owner: subscription.owner,
+          repo: subscription.name,
+          headers: OctoKitService.header,
+        } as any)
+      ).data as any as WorkflowRunList;
+      // console.debug("Workflow run", workFlowRun);
+      workFlowRun.workflow_runs.forEach((run) => {
+        if (run === null) {
+          return;
         }
-        this.inProgressList.add(run.id);
-      } else {
-        // we remove the run from our set
-        const removed = this.inProgressList.delete(run.id);
-        if (removed === true) {
-          // we send notification
-          this.sendNotification(run);
+        if (run.status === "in_progress") {
+          if (this.inProgressList.has(run.id) === false) {
+            // notifying when first time the run is found.
+            this.sendNotification(run);
+          }
+          this.inProgressList.add(run.id);
+        } else {
+          // we remove the run from our set
+          const removed = this.inProgressList.delete(run.id);
+          if (removed === true) {
+            // we send notification
+            this.sendNotification(run);
+          }
         }
-      }
-    });
+      });
+    } catch (err: any) {}
   }
 
   sendNotification(run: WorkflowRun) {
