@@ -4,6 +4,7 @@ import "./globals.css";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primeicons/primeicons.css";
 
+export const dynamic = 'force-dynamic'
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

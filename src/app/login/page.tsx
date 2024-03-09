@@ -11,7 +11,7 @@ export default function Login() {
   const [formData, setFormData] = useState<LoginForm>(new LoginForm());
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { push } = useRouter();
-  const toast = useRef(null);
+  const toast = useRef<Toast>(null);
 
   const clickedLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -41,8 +41,8 @@ export default function Login() {
       );
 
       if (loggedInUser?.record?.id) {
-        if (toast) {
-          toast.current.show({
+        if (toast?.current) {
+          toast?.current?.show({
             severity: "success",
             summary: "Logged In",
             detail: "Logged in successfully",
@@ -52,8 +52,8 @@ export default function Login() {
         push("/dashboard");
       }
     } catch (e) {
-      if (toast) {
-        toast.current.show({
+      if (toast?.current) {
+        toast?.current?.show({
           severity: "error",
           summary: "Failed",
           detail: (e as ClientResponseError).message,
@@ -77,7 +77,7 @@ export default function Login() {
           /> */}
           <div className="text-900 text-3xl font-medium mb-3">Welcome Back</div>
           <span className="text-600 font-medium line-height-3">
-            Don't have an account?
+            Don&rsquo;t have an account?
           </span>
           <a
             className="font-medium no-underline ml-2 text-blue-500 cursor-pointer"
