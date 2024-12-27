@@ -7,7 +7,6 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import RepoBasic from "./RepoBasic";
 import { RepoModel } from "../backend/models/RepoModel";
 import { Subscription } from "../backend/domain/Subscription";
-import { INotifier } from "../backend/patterns/DataObserver";
 import SubscriptionService from "../backend/services/SubscriptionService";
 import { Settings } from "../backend/domain/Settings";
 import Tables from "../backend/Tables";
@@ -21,6 +20,7 @@ const RepoList = () => {
   const [repoSearchText, setRepoSearchText] = useState<string>("");
   const [searchResult, setSearchResult] = useState<any[] | null>(null);
   const subscriptionChanged = useContext(SubscriptionObserverContext);
+  
   useEffect(() => {
     checkApiKey();
   }, [apiKey]);
@@ -35,37 +35,44 @@ const RepoList = () => {
     setLoading(false);
   };
   const onSearchClicked = async (e: FormEvent) => {
-    e.preventDefault();
-    if (apiKey === null || repoSearchText.trim() === "") {
-      return;
+    try {
+      e.preventDefault();
+      if (apiKey === null || repoSearchText.trim() === "") {
+        return;
+      }
+      setLoading(true);
+      const octokit = new Octokit({
+        auth: apiKey,
+      });
+      const searchResult = await octokit.search.repos({
+        q: `${repoSearchText}`,
+      });
+      setSearchResult(searchResult.data.items);
+    } catch (error: any) {
+      console.error("Error On Search: ", error);
     }
-    setLoading(true);
-    const octokit = new Octokit({
-      auth: apiKey,
-    });
-    const searchResult = await octokit.search.repos({
-      q: `${repoSearchText}`,
-    });
     setLoading(false);
-    setSearchResult(searchResult.data.items);
   };
 
   const onSubscribeClicked = async (repoDetails: RepoModel) => {
-    const subscriptionService = new SubscriptionService();
-    const payload: Subscription = {
-      githubId: repoDetails.id,
-      name: repoDetails.name,
-      url: repoDetails.html_url,
-      description: repoDetails.description,
-      owner: repoDetails?.owner?.login ?? "",
-      isEnabled: "TRUE",
-    } as Subscription;
+    try {
+      const subscriptionService = new SubscriptionService();
+      const payload: Subscription = {
+        githubId: repoDetails.id,
+        name: repoDetails.name,
+        url: repoDetails.html_url,
+        description: repoDetails.description,
+        owner: repoDetails?.owner?.login ?? "",
+        isEnabled: "TRUE",
+      } as Subscription;
 
-    const createdSuccessfully = await subscriptionService.create(payload);
-    if (createdSuccessfully) {
-      subscriptionChanged.notifyAll();
+      const createdSuccessfully = await subscriptionService.create(payload);
+      if (createdSuccessfully) {
+        subscriptionChanged.notifyAll();
+      }
+    } catch (error: any) {
+      console.error("Error: ", error);
     }
-
     setLoading(false);
   };
 
@@ -87,6 +94,7 @@ const RepoList = () => {
       console.error("ERROR", e);
     }
   };
+  
   return (
     <div>
       <form onSubmit={(e) => onSearchClicked(e)}>
@@ -100,6 +108,7 @@ const RepoList = () => {
           label="Search"
           type="button"
           icon="pi pi-search"
+          loading={loading}
           onClick={onSearchClicked}
           disabled={loading}
           rounded

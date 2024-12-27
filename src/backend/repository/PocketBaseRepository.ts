@@ -46,9 +46,15 @@ export default class PocketBaseRepository implements IRepository {
       )) ?? undefined
     );
   }
-  getByKeys<T>(keys: string[]): Promise<T[]> {
-    throw new Error("Method not implemented.");
+  
+  async getByKeys<T>(keys: string[]): Promise<T[]> {
+    return await this.db.getFullList<T>({
+      filter: keys
+        .flatMap((x) => this.filter("key={:keyValue}", { keyValue: x }))
+        .join("||"),
+    });
   }
+
   async getByKey<T>(key: string): Promise<T | null> {
     return await this.getFirstOne<T>(
       this.filter("key={:key}", {
@@ -63,8 +69,14 @@ export default class PocketBaseRepository implements IRepository {
     pageSize: number,
     filter: string
   ): Promise<T[] | undefined> {
+    if (!pageIndex) {
+      pageIndex = 0;
+    }
+    if (!pageSize) {
+      pageSize = 100;
+    }
     const result = await this.db.getList<T>(pageIndex, pageSize, {
-      filter: filter,
+      filter: filter ?? null,
     });
     return result && result.items.length > 0 ? result.items : [];
   }
