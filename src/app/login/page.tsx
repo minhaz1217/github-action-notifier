@@ -61,8 +61,8 @@ export default function Login() {
         });
       }
       console.error((e as ClientResponseError).message);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
   return (
     <div className="flex flex-row items-center justify-center w-full">
@@ -123,6 +123,7 @@ export default function Login() {
             <Button
               label="Sign In"
               icon="pi pi-user"
+              loading={isLoading}
               className="w-full"
               disabled={isLoading}
               onClick={clickedLogin}

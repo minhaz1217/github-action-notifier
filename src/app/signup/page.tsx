@@ -6,11 +6,14 @@ import { useRouter } from "next/navigation";
 import { ClientResponseError } from "pocketbase";
 import UserService from "../../backend/services/UserService";
 
-export default function Login() {
+export default function Signup() {
   const [formData, setFormData] = useState<SignUpForm>(new SignUpForm());
   const { push } = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const clickedSignUp = async (e: FormEvent) => {
+    setIsLoading(true);
+
     e.preventDefault();
     let newFormData = formData;
     newFormData.confirmPasswordError = "";
@@ -18,6 +21,7 @@ export default function Login() {
     if (!formData.password) {
       newFormData.passwordError = "Password needs to be filled";
       setFormData({ ...newFormData });
+      setIsLoading(false);
       return;
     }
     if (
@@ -27,11 +31,13 @@ export default function Login() {
       newFormData.passwordError =
         "Password should be at least 8 characters long";
       setFormData({ ...newFormData });
+      setIsLoading(false);
       return;
     }
     if (newFormData.confirmPassword !== newFormData.password) {
       newFormData.confirmPasswordError = "Password didn't match";
       setFormData({ ...newFormData });
+      setIsLoading(false);
       return;
     }
     setFormData({ ...newFormData });
@@ -49,6 +55,7 @@ export default function Login() {
     } catch (e) {
       // TODO: send notification
       console.error((e as ClientResponseError).message);
+      setIsLoading(false);
     }
   };
   return (
@@ -133,6 +140,7 @@ export default function Login() {
 
             <Button
               label="Sign Up"
+              loading={isLoading}
               icon="pi pi-user"
               className="w-full"
               type="submit"

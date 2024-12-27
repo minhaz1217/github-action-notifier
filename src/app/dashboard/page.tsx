@@ -15,6 +15,7 @@ import {
 } from "@/component/contexts/contexts";
 
 const Dashboard = () => {
+  
   const newSubscriptionAdded$ = new DataObserver();
 
   const userService = new UserService();

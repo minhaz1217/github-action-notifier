@@ -1,5 +1,8 @@
 import { StringBoolean } from "../domain/StringBoolean";
 
+/**
+ * This is used to get repo information from github
+ */
 export interface RepoModel {
   id: string;
   name: string;
