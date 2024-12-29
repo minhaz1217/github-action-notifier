@@ -90,7 +90,7 @@ export default class AllSettingsService {
     }
     return "";
   }
-  
+
   async getDiscordUrl() {
     const discordUrl = await this.settingRepo.getKey(
       this.DISCORD_WEBHOOK_URL_KEY
