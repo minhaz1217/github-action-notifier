@@ -8,13 +8,14 @@ export class RepositoryFactory {
     dbName: string = "",
     repo: "POCKETBASE" | "LOCALSTORAGE" | "INDEXED_DB" | null = null
   ): IRepository {
-    if (repo === "POCKETBASE") {
-      return new PocketBaseRepository(dbName);
-    } else if (repo === "LOCALSTORAGE") {
-      return new LocalStorageRepository(dbName);
-    }
+    return new PocketBaseRepository(dbName);
+    // if (repo === "POCKETBASE") {
+    //   return new PocketBaseRepository(dbName);
+    // } else if (repo === "LOCALSTORAGE") {
+    //   return new LocalStorageRepository(dbName);
+    // }
 
-    return new IndexedDBRepository(dbName);
+    // return new IndexedDBRepository(dbName);
     // TODO: depending on environment return repository
   }
 }
